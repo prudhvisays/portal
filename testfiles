@@ -1,0 +1,16 @@
+<div class="canvas-interactive-wrapper">
+    <canvas id="canvas-interactive"></canvas>
+    <div class="cta-wrapper">
+        <a href="#default-state" id="default-state-cta" class="active">Default state</a>
+        <a href="#violet-state" id="violet-state-cta">Violet state</a>
+        <a href="#orange-state" id="orange-state-cta">Orange state</a>
+    </div>
+</div>
+
+<header className="canvas-title-box">
+<canvas id="title-box"></canvas>
+    <div className="title-wrapper">
+      <h3>VIDEOS</h3>
+    </div>
+
+</header>

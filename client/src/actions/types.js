@@ -1,0 +1,6 @@
+export const SET_CURRENT_USER = "SET_CURRENT_USER";
+export const INVALID_USER = "INVALID_USER";
+export const POPULATE_VIDEOS = "POPULATE_VIDEOS";
+export const PLAY_VIDEO = "PLAY_VIDEO";
+export const PAUSE_VIDEO = "PAUSE_VIDEO";
+export const SINGLE_VIDEO = "SINGLE_VIDEO"
