@@ -98,8 +98,10 @@ logoColor(){
       //     </ul>
           // </nav>
 
-          <nav id="nav-bar" className={classnames('navbar','navbar-full','navbar-light','bg-faded',{'navbar-fixed-top':this.state.scrollTop > this.state.offset })} style={{'backgroundColor':'#fff'}}>
-              <div className="navbar-brand">
+          // <nav id="nav-bar" className={classnames('navbar','navbar-full','navbar-light','bg-faded',{'navbar-fixed-top':this.state.scrollTop > this.state.offset })} style={{'backgroundColor':'#fff'}}>
+           <nav id="nav-bar" className='navbar navbar-full navbar-light bg-faded navbar-fixed-top' style={{'backgroundColor':'#fff'}}>
+<div className="container">
+               <div className="navbar-brand">
               <div className="block-logo">
               <canvas id="block-logo-canvas"></canvas>
               <Link to={`/videoslist/${user.sessionId}`} className="block-logo-mask">Granim.js</Link>
@@ -107,11 +109,12 @@ logoColor(){
               </div>
 
 
-    <button className="navbar-toggler hidden-sm-up pull-md-right" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar2" aria-controls="exCollapsingNavbar2" aria-expanded="false" aria-label="Toggle navigation">
+    <button className="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar2" aria-controls="exCollapsingNavbar2" aria-expanded="false" aria-label="Toggle navigation">
     &#9776;
   </button>
-  <div className="collapse navbar-toggleable-xs pull-md-right pull-sm-right" id="exCollapsingNavbar2">
+  <div className="collapse navbar-toggleable-xs pull-md-right navbar-toggleable-md" id="exCollapsingNavbar2">
               {isAuthenticated ? userLinks: guestLinks}
+  </div>
   </div>
             </nav>
 

@@ -1,6 +1,5 @@
 import React from "react";
 import NavigationBar from "../NavigationBar";
-import VideoGrid from "../video/VideoGrid";
 
 class VideosHeader extends React.Component{
 constructor(props){
@@ -33,12 +32,17 @@ handleScroll(event){
     return(
   <header className="title-box">
         <div className="line-header" style={lineHeader}></div>
-          <div className="container" style={{marginTop:'70px'}}>
-          <div className="card">
-          <VideoGrid/>
-          </div>
-          </div>
+        <div className="camera-header" style={cameraHeader}></div>
+        <div className="bigwheel-header" style={bigwheelHeader}></div>
+        <div className="highreel-header"></div>
+        <div className="miniwheel-header"></div>
+        <div className="nanowheel-header"></div>
+      <div className="logo" style={titleHeader}>
+        <h1>VIDEOS</h1>
+      </div>
 
+      <div className="clap-header" style={clapHeader}></div>
+      <div className="lowreel-header"></div>
   </header>
 
     )

@@ -501,7 +501,7 @@ var LoginForm = function (_React$Component) {
         ),
         _react2.default.createElement(
           "button",
-          null,
+          { className: "buttons" },
           "LOGIN"
         )
       );
@@ -732,32 +732,37 @@ var NavigationBar = function (_React$Component) {
         //     </ul>
         // </nav>
 
+        // <nav id="nav-bar" className={classnames('navbar','navbar-full','navbar-light','bg-faded',{'navbar-fixed-top':this.state.scrollTop > this.state.offset })} style={{'backgroundColor':'#fff'}}>
         _react2.default.createElement(
           "nav",
-          { id: "nav-bar", className: (0, _classnames2.default)('navbar', 'navbar-full', 'navbar-light', 'bg-faded', { 'navbar-fixed-top': this.state.scrollTop > this.state.offset }), style: { 'backgroundColor': '#fff' } },
+          { id: "nav-bar", className: "navbar navbar-full navbar-light bg-faded navbar-fixed-top", style: { 'backgroundColor': '#fff' } },
           _react2.default.createElement(
             "div",
-            { className: "navbar-brand" },
+            { className: "container" },
             _react2.default.createElement(
               "div",
-              { className: "block-logo" },
-              _react2.default.createElement("canvas", { id: "block-logo-canvas" }),
+              { className: "navbar-brand" },
               _react2.default.createElement(
-                _reactRouter.Link,
-                { to: "/videoslist/" + user.sessionId, className: "block-logo-mask" },
-                "Granim.js"
+                "div",
+                { className: "block-logo" },
+                _react2.default.createElement("canvas", { id: "block-logo-canvas" }),
+                _react2.default.createElement(
+                  _reactRouter.Link,
+                  { to: "/videoslist/" + user.sessionId, className: "block-logo-mask" },
+                  "Granim.js"
+                )
               )
+            ),
+            _react2.default.createElement(
+              "button",
+              { className: "navbar-toggler hidden-sm-up", type: "button", "data-toggle": "collapse", "data-target": "#exCollapsingNavbar2", "aria-controls": "exCollapsingNavbar2", "aria-expanded": "false", "aria-label": "Toggle navigation" },
+              "☰"
+            ),
+            _react2.default.createElement(
+              "div",
+              { className: "collapse navbar-toggleable-xs pull-md-right navbar-toggleable-md", id: "exCollapsingNavbar2" },
+              isAuthenticated ? userLinks : guestLinks
             )
-          ),
-          _react2.default.createElement(
-            "button",
-            { className: "navbar-toggler hidden-sm-up pull-md-right", type: "button", "data-toggle": "collapse", "data-target": "#exCollapsingNavbar2", "aria-controls": "exCollapsingNavbar2", "aria-expanded": "false", "aria-label": "Toggle navigation" },
-            "☰"
-          ),
-          _react2.default.createElement(
-            "div",
-            { className: "collapse navbar-toggleable-xs pull-md-right pull-sm-right", id: "exCollapsingNavbar2" },
-            isAuthenticated ? userLinks : guestLinks
           )
         )
       );
@@ -794,6 +799,10 @@ var _react2 = _interopRequireDefault(_react);
 var _NavigationBar = require("../NavigationBar");
 
 var _NavigationBar2 = _interopRequireDefault(_NavigationBar);
+
+var _VideoGrid = require("../video/VideoGrid");
+
+var _VideoGrid2 = _interopRequireDefault(_VideoGrid);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -847,22 +856,15 @@ var VideosHeader = function (_React$Component) {
         "header",
         { className: "title-box" },
         _react2.default.createElement("div", { className: "line-header", style: lineHeader }),
-        _react2.default.createElement("div", { className: "camera-header", style: cameraHeader }),
-        _react2.default.createElement("div", { className: "bigwheel-header", style: bigwheelHeader }),
-        _react2.default.createElement("div", { className: "highreel-header" }),
-        _react2.default.createElement("div", { className: "miniwheel-header" }),
-        _react2.default.createElement("div", { className: "nanowheel-header" }),
         _react2.default.createElement(
           "div",
-          { className: "logo", style: titleHeader },
+          { className: "container", style: { marginTop: '70px' } },
           _react2.default.createElement(
-            "h1",
-            null,
-            "VIDEOS"
+            "div",
+            { className: "card" },
+            _react2.default.createElement(_VideoGrid2.default, null)
           )
-        ),
-        _react2.default.createElement("div", { className: "clap-header", style: clapHeader }),
-        _react2.default.createElement("div", { className: "lowreel-header" })
+        )
       );
     }
   }]);
@@ -872,7 +874,7 @@ var VideosHeader = function (_React$Component) {
 
 exports.default = VideosHeader;
 
-},{"../NavigationBar":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\NavigationBar.js","react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\modals\\LoginModal.js":[function(require,module,exports){
+},{"../NavigationBar":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\NavigationBar.js","../video/VideoGrid":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\video\\VideoGrid.js","react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\modals\\LoginModal.js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1225,6 +1227,29 @@ var Greetings = function (_React$Component) {
   }
 
   _createClass(Greetings, [{
+    key: "componentWillMount",
+    value: function componentWillMount() {
+
+      if (this.props.authReducers.isAuthenticated) {
+        var sessionData = JSON.parse(localStorage.getItem('sessionData'));
+        var sessionId = sessionData.sessionId;
+
+        var videoUrl = "videoslist/" + sessionId;
+        this.context.router.push(videoUrl);
+      }
+    }
+  }, {
+    key: "componentWillUpdate",
+    value: function componentWillUpdate(nextProps) {
+      if (nextProps.authReducers.isAuthenticated) {
+        var sessionData = JSON.parse(localStorage.getItem('sessionData'));
+        var sessionId = sessionData.sessionId;
+
+        var videoUrl = "videoslist/" + sessionId;
+        this.context.router.push(videoUrl);
+      }
+    }
+  }, {
     key: "componentDidMount",
     value: function componentDidMount() {
       this.logoColor();
@@ -1254,31 +1279,37 @@ var Greetings = function (_React$Component) {
         "div",
         { className: "landingBody" },
         _react2.default.createElement(
-          "main",
-          null,
+          "div",
+          { className: "container contain", style: { 'width': '75%' } },
           _react2.default.createElement(
             "div",
-            { className: "bloc-logo" },
-            _react2.default.createElement("canvas", { id: "logo-canvas" }),
+            { className: "row" },
             _react2.default.createElement(
-              "a",
-              { className: "logo-mask" },
-              "Granim.js"
-            )
-          ),
-          _react2.default.createElement(
-            "div",
-            { className: "panel pink" },
-            _react2.default.createElement(_LoginForm2.default, null),
-            _react2.default.createElement(
-              _reactRouter.Link,
-              { to: "/login" },
-              "LoginPage"
+              "div",
+              { className: "col-xs-12" },
+              _react2.default.createElement(
+                "div",
+                { className: "bloc-logo" },
+                _react2.default.createElement(
+                  "canvas",
+                  { id: "logo-canvas" },
+                  "hello"
+                ),
+                _react2.default.createElement(
+                  "a",
+                  { className: "logo-mask" },
+                  "Granim.js"
+                )
+              )
             ),
             _react2.default.createElement(
-              _reactRouter.Link,
-              { to: videoListUrl },
-              "view"
+              "div",
+              { className: "col-xs-12" },
+              _react2.default.createElement(
+                "div",
+                { className: "panel pink" },
+                _react2.default.createElement(_LoginForm2.default, null)
+              )
             )
           )
         )
@@ -1288,6 +1319,10 @@ var Greetings = function (_React$Component) {
 
   return Greetings;
 }(_react2.default.Component);
+
+Greetings.contextTypes = {
+  router: _react2.default.PropTypes.object.isRequired
+};
 
 function mapStateToProps(state) {
   return {
@@ -1464,10 +1499,11 @@ var SingleVideoPage = function (_React$Component) {
         _react2.default.createElement(
           "div",
           null,
+          _react2.default.createElement("div", { style: { paddingBottom: '34px' } }),
           _react2.default.createElement(_NavigationBar2.default, null),
           _react2.default.createElement(
             "div",
-            { className: "container", style: { 'marginTop': '10px' } },
+            { className: "container", style: { 'marginTop': '30px' } },
             _react2.default.createElement(
               "div",
               { className: "row" },
@@ -1753,10 +1789,6 @@ var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _VideoGrid = require("./VideoGrid");
-
-var _VideoGrid2 = _interopRequireDefault(_VideoGrid);
-
 var _VideosHeader = require("../header/VideosHeader");
 
 var _VideosHeader2 = _interopRequireDefault(_VideosHeader);
@@ -1788,17 +1820,8 @@ var VideoPage = function (_React$Component) {
       return _react2.default.createElement(
         "div",
         null,
-        _react2.default.createElement(_VideosHeader2.default, null),
-        _react2.default.createElement(
-          "div",
-          { style: { 'height': '59px' } },
-          _react2.default.createElement(_NavigationBar2.default, null)
-        ),
-        _react2.default.createElement(
-          "div",
-          { className: "container" },
-          _react2.default.createElement(_VideoGrid2.default, null)
-        )
+        _react2.default.createElement(_NavigationBar2.default, null),
+        _react2.default.createElement(_VideosHeader2.default, null)
       );
     }
   }]);
@@ -1808,7 +1831,7 @@ var VideoPage = function (_React$Component) {
 
 exports.default = VideoPage;
 
-},{"../NavigationBar":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\NavigationBar.js","../header/VideosHeader":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\header\\VideosHeader.js","./VideoGrid":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\video\\VideoGrid.js","react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\video\\VideoUtil.js":[function(require,module,exports){
+},{"../NavigationBar":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\NavigationBar.js","../header/VideosHeader":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\header\\VideosHeader.js","react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\video\\VideoUtil.js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2159,6 +2182,7 @@ exports.default = function (ComposedComponent) {
     _createClass(Authenticate, [{
       key: "componentWillMount",
       value: function componentWillMount() {
+
         if (!this.props.isAuthenticated) {
           this.context.router.push("/");
         }
