@@ -27,6 +27,7 @@ var argv = require('yargs').argv,
 
     plug       = require('gulp-load-plugins')({ lazy: true }),
     babel      = require('babel-core/register'),
+    Server     = require('karma').Server,
 
     minifyCSS  = require('gulp-minify-css');
 
@@ -102,13 +103,32 @@ gulp.task('csswatch', function () {
 });
 
 
-gulp.task('test', function () {
+gulp.task('test1', function () {
   return gulp.src('./client/src/test/**/*.js', { read: false })
     .pipe(plug.mocha({
       compilers: {
         js: babel
       }
     }));
+});
+
+/**
+ * Run test once and exit
+ */
+gulp.task('test', function (done) {
+  new Server({
+    configFile: __dirname + '/karma.conf.js',
+    singleRun: true
+  }, done).start();
+});
+
+/**
+ * Watch for file changes and re-run tests on each change
+ */
+gulp.task('tdd', function (done) {
+  new Server({
+    configFile: __dirname + '/karma.conf.js'
+  }, done).start();
 });
 
 gulp.task('watch', ['watchify', 'csswatch']);
