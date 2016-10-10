@@ -18,7 +18,7 @@ constructor(props){
 
 handleScroll(event){
   console.log(Math.floor(window.pageYOffset));
-  const itemTranslate = event.srcElement.body.scrollTop;
+  const itemTranslate = window.pageYOffset;
   this.setState({transform: itemTranslate})
 
 }
@@ -29,7 +29,6 @@ handleScroll(event){
     const clapHeader = { transform : 'translate(0px, -'+ this.state.transform /60 + '%)' }
     const lineHeader = { transform : 'translate(0px, -'+ this.state.transform /60 + '%)' }
     const titleHeader = { transform : 'translate(0px, '+ this.state.transform /5 + '%)' }
-    console.log(cameraHeader);
     return(
   <header className="title-box">
         <div className="line-header" style={lineHeader}></div>

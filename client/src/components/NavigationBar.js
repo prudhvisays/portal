@@ -15,7 +15,14 @@ class NavigationBar extends React.Component {
     this.logoColor = this.logoColor.bind(this);
   }
     componentDidMount(){
-      window.addEventListener('scroll',this.handleScroll);
+      if(window.addEventListener){
+        (window.addEventListener)('scroll',this.handleScroll);
+      } else if(window.attachEvent) {
+        window.attachEvent('scroll', this.handleScroll);
+      }else {
+        window['scroll'] = this.handleScroll;
+      }
+
       const navBar = document.getElementById('nav-bar');
       const navPos = navBar.offsetTop;
       console.log('navpos' + navPos)
@@ -24,7 +31,11 @@ class NavigationBar extends React.Component {
     }
     componentWillUnmount() {
       window.removeEventListener('scroll', this.handleScroll);
-
+      if(window.removeEventListener){
+        (window.removeEventListener)('scroll',this.handleScroll);
+      } else if(window.detachEvent) {
+        window.detachEvent('scroll', this.handleScroll);
+      }
   }
 
 logoColor(){
@@ -49,11 +60,9 @@ logoColor(){
 }
 
   handleScroll(event){
-    console.log(Math.floor(window.pageYOffset));
-    const itemTranslate = event.srcElement.body.scrollTop;
+    console.log(Math.floor(event.srcElement.body.scrollTop));
+    const itemTranslate = window.pageYOffset;
     this.setState({scrollTop: itemTranslate})
-
-
   }
 
   logout(e) {

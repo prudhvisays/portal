@@ -21,8 +21,8 @@ export function logout(sessionId) {
     return axios.get('/user/logout',logoutparams).then(res =>
     {
       localStorage.removeItem('sessionData');
-      setAuthorizationToken(false);
       dispatch(setCurrentUser({}));
+      setAuthorizationToken(false);
     });
   }
 }

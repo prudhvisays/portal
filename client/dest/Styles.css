@@ -651,3 +651,9 @@ p{
 .fa{
   color:gold;
 }
+
+/*navbar*/
+
+.navbar-fixed-top{
+position: expression(fixed) !important;
+}

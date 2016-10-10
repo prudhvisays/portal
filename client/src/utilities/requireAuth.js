@@ -5,13 +5,13 @@ export default function(ComposedComponent){
   class Authenticate extends React.Component {
     componentWillMount() {
       if(!this.props.isAuthenticated) {
-        this.context.router.push("/login");
+        this.context.router.push("/");
       }
     }
 
     componentWillUpdate(nextProps) {
       if(!nextProps.isAuthenticated){
-        this.context.router.push("/login");
+        this.context.router.push("/");
       }
     }
 

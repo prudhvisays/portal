@@ -22,19 +22,6 @@ class DefaultRate extends React.Component{
       this.setState({rating:avg});
     }
 
-    componentWillReceiveProps(nextProps){
-      if(this.props.rating !== nextProps.rating){
-        const { rating } = nextProps;
-          const total = reduce(rating,(sum,n) => {
-            return (sum + n)
-
-          })
-          const avg = total/rating.length;
-          console.log("rating:" + avg)
-          this.setState({rating:avg});
-      }
-      }
-
 
   render(){
     const stars = [];
