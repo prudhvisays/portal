@@ -12,13 +12,8 @@ describe('Crossover Video Portal', function () {
   it('Application renders without problems', function () {
 
     var ReactApp = require('../ReactApp').default;
-    var Greetings = require('../components/test/Greetings').default;
-
     var app = ReactTestUtils.renderIntoDocument(<ReactApp />);
-    //var greeting = ReactTestUtils.findRenderedComponentWithType(app, Greetings)
-
     expect(app).to.be.ok;
-    //expect(greeting).to.be.ok;
 
   });
 

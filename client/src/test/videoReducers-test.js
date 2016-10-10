@@ -1,11 +1,6 @@
 import * as types from '../actions/types';
 import reducer from '../reducers/videoReducers';
 
-
-var chai = require('chai')
-  , expect = chai.expect
-  , should = chai.should();
-
 const initialState = {
     videos: [],
     activeVideo: {}
@@ -15,7 +10,7 @@ describe('Videos Reducer', function () {
   it('should return the initial state', function () {
     expect(
       reducer(undefined, {})
-    ).to.eql(
+    ).toEqual(
       initialState
     );
   });
@@ -28,7 +23,7 @@ describe('Videos Reducer', function () {
     const action = { type: types.POPULATE_VIDEOS , videos};
     expect(
       reducer(initialState, action)
-    ).to.eql(
+    ).toEqual(
       {
         videos: [{ _id:1, title : 'Video title', playing : false}],
         fetch: true
@@ -45,7 +40,7 @@ describe('Videos Reducer', function () {
     const action = { type: types.PLAY_VIDEO , videoId};
     expect(
       reducer(currentState, action)
-    ).to.eql(
+    ).toEqual(
       {
         videos: [{ _id:1, title : 'Video title 1', playing : true},
                  { _id:2, title : 'Video title 2', playing : false}]
@@ -62,7 +57,7 @@ describe('Videos Reducer', function () {
     const action = { type: types.PLAY_VIDEO , videoId};
     expect(
       reducer(currentState, action)
-    ).to.eql(
+    ).toEqual(
       {
         videos: [{ _id:1, title : 'Video title 1', playing : false},
                  { _id:2, title : 'Video title 2', playing : true}]
@@ -79,7 +74,7 @@ describe('Videos Reducer', function () {
     const action = { type: types.PAUSE_VIDEO , videoId};
     expect(
       reducer(currentState, action)
-    ).to.eql(
+    ).toEqual(
       {
         videos: [{ _id:1, title : 'Video title 1', playing : false},
                  { _id:2, title : 'Video title 2', playing : false}]

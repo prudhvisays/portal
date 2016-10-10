@@ -102,16 +102,6 @@ gulp.task('csswatch', function () {
     gulp.watch(cssFiles, ['css']);
 });
 
-
-gulp.task('test1', function () {
-  return gulp.src('./client/src/test/**/*.js', { read: false })
-    .pipe(plug.mocha({
-      compilers: {
-        js: babel
-      }
-    }));
-});
-
 /**
  * Run test once and exit
  */

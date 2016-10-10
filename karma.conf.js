@@ -12,6 +12,7 @@ module.exports = function(config) {
     browserify: {
            debug: true,
            transform: [ 'babelify' ]
-    }
+    },
+    reporters: ['progress']
   });
 };
