@@ -25,6 +25,9 @@ var argv = require('yargs').argv,
     watchify   = require('watchify'),
     uglify     = require('gulp-uglify'),
 
+    plug       = require('gulp-load-plugins')({ lazy: true }),
+    babel      = require('babel-core/register'),
+
     minifyCSS  = require('gulp-minify-css');
 
 
@@ -96,6 +99,16 @@ gulp.task('watchify', function() {
 
 gulp.task('csswatch', function () {
     gulp.watch(cssFiles, ['css']);
+});
+
+
+gulp.task('test', function () {
+  return gulp.src('./client/src/test/**/*.js', { read: false })
+    .pipe(plug.mocha({
+      compilers: {
+        js: babel
+      }
+    }));
 });
 
 gulp.task('watch', ['watchify', 'csswatch']);
