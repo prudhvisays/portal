@@ -16,4 +16,31 @@ describe('Video Actions', function () {
      expect(actions.populateVideos(videos)).to.eql(expectedAction);
   });
 
+  it('should play video', function () {
+      const videoId = 1;
+      const expectedAction = {
+          type: types.PLAY_VIDEO,
+          videoId
+      };
+     expect(actions.onPlay(videoId)).to.eql(expectedAction);
+  });
+
+  it('should pause video', function () {
+      const videoId = 1;
+      const expectedAction = {
+          type: types.PAUSE_VIDEO,
+          videoId
+      };
+     expect(actions.onPause(videoId)).to.eql(expectedAction);
+  });
+
+  it('should play single video', function () {
+      const video = { _id : 1, title : 'Video Title'};
+      const expectedAction = {
+          type: types.SINGLE_VIDEO,
+          video
+      };
+     expect(actions.playSingleVideo(video)).to.eql(expectedAction);
+  });
+
 });
