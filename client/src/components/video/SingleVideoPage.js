@@ -72,9 +72,9 @@ getMoretext(){
     <Link className="media-left" to={`/video/${this.state.sessionId}/${video._id}`}>
     <video className="media-object" src={`/${video.url}`} width="120" height="120"></video>
     </Link>
-    <div className="media-body">
+    <div className="media-body medialist-body">
         <h6 className="media-heading">{video.name.substring(3)}</h6>
-        <p className="lead">{video.description.substring(0,60)}</p>
+        <p className="lead p-margin">{video.description.substring(0,60)}</p>
         <div className="card-text"><small className="text-muted"><DefaultRate rating={video.ratings}/></small></div>
     </div>
 
@@ -96,7 +96,7 @@ getMoretext(){
                   <div className="row">
                     <div className="col-md-8">
                     <div className="card">
-                    <video className="card-img-top" ref={video._id} src={videoUrl} width="100%"  controls>
+                    <video className="card-img-top" ref={video._id} src={videoUrl} width="100%"  controls autoPlay>
                     </video>
                     </div>
                     <div className="card">

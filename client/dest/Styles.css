@@ -1,3 +1,5 @@
+@import 'https://fonts.googleapis.com/css?family=Pacifico';
+
 body{
   background-color: #f1f1f1;
 }
@@ -658,5 +660,18 @@ p{
 /*navbar*/
 
 .navbar-fixed-top{
-position: expression(fixed) !important;
+box-shadow: rgba(0, 0, 0, 0.19) 0 0 8px 0;
+}
+
+/*single video-page list*/
+.medialist-body{
+  padding-top: 18px;
+}
+.p-margin{
+  margin-bottom: 0;
+}
+
+/*username font*/
+.font-family{
+  font-family: 'Pacifico', cursive;
 }

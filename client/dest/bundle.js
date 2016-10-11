@@ -696,7 +696,7 @@ var NavigationBar = function (_React$Component) {
         { className: "nav navbar-nav" },
         _react2.default.createElement(
           "li",
-          { className: "nav-item active" },
+          { className: "nav-item active font-family" },
           _react2.default.createElement(
             "h4",
             null,
@@ -1466,7 +1466,7 @@ var SingleVideoPage = function (_React$Component) {
           ),
           _react2.default.createElement(
             "div",
-            { className: "media-body" },
+            { className: "media-body medialist-body" },
             _react2.default.createElement(
               "h6",
               { className: "media-heading" },
@@ -1474,7 +1474,7 @@ var SingleVideoPage = function (_React$Component) {
             ),
             _react2.default.createElement(
               "p",
-              { className: "lead" },
+              { className: "lead p-margin" },
               video.description.substring(0, 60)
             ),
             _react2.default.createElement(
@@ -1513,7 +1513,7 @@ var SingleVideoPage = function (_React$Component) {
                 _react2.default.createElement(
                   "div",
                   { className: "card" },
-                  _react2.default.createElement("video", { className: "card-img-top", ref: video._id, src: videoUrl, width: "100%", controls: true })
+                  _react2.default.createElement("video", { className: "card-img-top", ref: video._id, src: videoUrl, width: "100%", controls: true, autoPlay: true })
                 ),
                 _react2.default.createElement(
                   "div",
@@ -1641,6 +1641,15 @@ var Video = function (_React$Component) {
     value: function componentDidMount() {
       var refId = this.refs[this.props.video._id];
       refId;
+    }
+  }, {
+    key: "componentWillMount",
+    value: function componentWillMount() {
+      if (window.matchMedia("(min-width: 400px)").matches) {
+        /* the viewport is at least 400 pixels wide */
+      } else {
+          /* the viewport is less than 400 pixels wide */
+        }
     }
   }, {
     key: "onPlay",

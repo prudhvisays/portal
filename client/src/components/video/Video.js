@@ -10,10 +10,19 @@ constructor(props){
   this.onPlay = this.onPlay.bind(this);
   this.onPaused = this.onPaused.bind(this);
 }
+
 componentDidMount(){
   const refId = this.refs[this.props.video._id];
   refId;
 
+}
+
+componentWillMount(){
+  if (window.matchMedia("(min-width: 400px)").matches) {
+  /* the viewport is at least 400 pixels wide */
+} else {
+  /* the viewport is less than 400 pixels wide */
+}
 }
 
 onPlay(){
