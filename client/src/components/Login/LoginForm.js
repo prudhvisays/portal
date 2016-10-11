@@ -1,5 +1,4 @@
 import React from 'react';
-import validateInput from "../../validations/Login.js";
 import { connect } from "react-redux";
 import { login } from '../../actions/authActions';
 import TextFieldGroup from "../../common/TextFieldGroup";
@@ -16,27 +15,17 @@ class LoginForm extends React.Component {
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
-
-  // isValid() {
-  //   const { errors, isValid } = validateInput(this.state);
-  //
-  //   if(!isValid){
-  //     this.setState({ errors });
-  //   }
-  //   return isValid;
-  // }
+// submit user state to server to check whether the user details
   onSubmit(e){
     e.preventDefault();
       this.setState({ errors: {}, isLoading:true });
       this.props.login(this.state).then(
       (res) => {
-        console.log(this.props.userData.error);
               if(this.props.userData.isAuthenticated){
                 let sessionData = JSON.parse(localStorage.getItem('sessionData'));
                 this.context.router.push("/videosList/" + sessionData.sessionId);
               }else{
                 this.setState({ errors: this.props.userData })
-                console.log(this.state.errors)
               }
         },
       (err) => this.setState({ errors: err.response.data, isLoading: false })

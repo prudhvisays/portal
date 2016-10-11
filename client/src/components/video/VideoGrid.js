@@ -16,7 +16,7 @@ class VideoGrid extends React.Component {
   }
 
 
-
+//map the videos
   render() {
     const { videos } = this.props
     return (

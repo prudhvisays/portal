@@ -2,7 +2,7 @@ import axios from "axios";
 import { SET_CURRENT_USER, INVALID_USER } from "./types";
 import setAuthorizationToken from "../utilities/setAuthorizationToken";
 
-
+// after login set the current user
 export function setCurrentUser(user) {
   return {
     type: "SET_CURRENT_USER",
@@ -34,7 +34,7 @@ export function invalidUser(invalid) {
     invalid
   };
 }
-
+// fetch login data
 export function login(userData) {
   return dispatch => {
     return axios.post('/user/auth',userData).then((res) => {

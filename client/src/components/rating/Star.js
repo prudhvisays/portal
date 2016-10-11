@@ -1,5 +1,6 @@
 import React from "react";
 
+// star icon component
 class Star extends React.Component{
   render(){
     let r = 'fa fa-star';

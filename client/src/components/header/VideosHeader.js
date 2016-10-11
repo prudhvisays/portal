@@ -25,11 +25,7 @@ handleScroll(event){
 }
 
   render(){
-    const cameraHeader = { transform : 'translate(0px, '+ this.state.transform /50 + '%)' }
-    const bigwheelHeader = { transform : 'translate(0px, '+ this.state.transform /18 + '%)' }
-    const clapHeader = { transform : 'translate(0px, -'+ this.state.transform /60 + '%)' }
     const lineHeader = { transform : 'translate(0px, -'+ this.state.transform /60 + '%)' }
-    const titleHeader = { transform : 'translate(0px, '+ this.state.transform /5 + '%)' }
     return(
   <header className="title-box">
         <div className="line-header" style={lineHeader}></div>

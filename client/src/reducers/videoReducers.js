@@ -1,11 +1,12 @@
 import isEmpty from "lodash/isEmpty";
 import { POPULATE_VIDEOS, PLAY_VIDEO, PAUSE_VIDEO, SINGLE_VIDEO } from "../actions/types";
 import { findIndex, filter } from "lodash";
+
+//this is the initialState of the video component
 const initialState = {
     videos: [],
     activeVideo: {}
 }
-
 export default (state = initialState, action) => {
     switch (action.type) {
         case POPULATE_VIDEOS:
@@ -20,19 +21,17 @@ export default (state = initialState, action) => {
             }
         case PLAY_VIDEO:
             return onPlay(state, action);
-
         case PAUSE_VIDEO:
             return onPause(state, action);
-
         case SINGLE_VIDEO:
-            return onClick(state,action);
+            return onClick(state, action);
         case "RATE_VIDEO":
-             rateVideo(state,action);
+            rateVideo(state, action);
         default:
             return state;
     }
 }
-
+//when selected a video to play..make the isplaying to true
 function onPlay(state, action) {
     console.log("oldState " + state);
     const index = findIndex(state.videos, {
@@ -41,16 +40,13 @@ function onPlay(state, action) {
     const newVideos = copy(state.videos)
     newVideos.forEach(v => v.playing = false);
     newVideos[index]['playing'] = true;
-
-    const newState = {
-        ...state,
+    const newState = {...state,
         videos: newVideos
-
     }
     console.log("newState " + newState);
     return newState;
 }
-
+//when another video/ video is paused .make the isplaying to false
 function onPause(state, action) {
     console.log("oldState " + state);
     const index = findIndex(state.videos, {
@@ -58,22 +54,18 @@ function onPause(state, action) {
     });
     const newVideos = copy(state.videos)
     newVideos[index]['playing'] = false;
-    const newState = {
-        ...state,
+    const newState = {...state,
         videos: newVideos
-
     }
     console.log("newState " + newState);
     return newState;
 }
 
-function onClick(state,action) {
-  const { video } = action;
-
-  return {
-    ...state,
-    activeVideo: video.data
-  }
+function onClick(state, action) {
+    const { video } = action;
+    return {...state,
+        activeVideo: video.data
+    }
 }
 
 function copy(o) {

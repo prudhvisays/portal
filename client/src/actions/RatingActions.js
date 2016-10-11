@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// post rating data to the server
 export function Rating(videoRating){
   const sessionData = JSON.parse(localStorage.getItem('sessionData'))
   const { sessionId } = sessionData;

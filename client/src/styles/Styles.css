@@ -11,9 +11,13 @@ body{
   height: 100vh;
 }
 .contain{
-  display: flex;
-  align-items: center;
-  justify-content: center;
+width: 58%;
+}
+
+@media only screen and (max-width: 500px) {
+    .contain {
+        width: 77%;
+    }
 }
 
 main{
@@ -674,4 +678,8 @@ box-shadow: rgba(0, 0, 0, 0.19) 0 0 8px 0;
 /*username font*/
 .font-family{
   font-family: 'Pacifico', cursive;
+}
+
+  .media-object {
+    padding: 10% 0 0 0;
 }

@@ -1,5 +1,5 @@
 import axios from "axios";
-
+//set the axios header to current user
 export default function setAuthorizationToken(token) {
   if(token) {
     console.log(token);

@@ -47,9 +47,11 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+//using redux-thunk for asynchronous data
 var store = (0, _redux.createStore)(_rootReducer2.default, (0, _redux.compose)((0, _redux.applyMiddleware)(_reduxThunk2.default), window.devToolsExtension ? window.devToolsExtension() : function (f) {
   return f;
 }));
+//we are checking whether the users is logged in or not
 var retrievedSessionData = localStorage.getItem('sessionData');
 if (retrievedSessionData) {
   console.log(JSON.parse(retrievedSessionData));
@@ -62,6 +64,7 @@ if (retrievedSessionData) {
   (0, _setAuthorizationToken2.default)(sessionId);
   store.dispatch((0, _authActions.setCurrentUser)(JSON.parse(retrievedSessionData)));
 }
+//provider will connect react to redux
 
 var ReactApp = function (_React$Component) {
   _inherits(ReactApp, _React$Component);
@@ -104,6 +107,7 @@ var _axios2 = _interopRequireDefault(_axios);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// post rating data to the server
 function Rating(videoRating) {
   var sessionData = JSON.parse(localStorage.getItem('sessionData'));
   var sessionId = sessionData.sessionId;
@@ -141,6 +145,7 @@ var _setAuthorizationToken2 = _interopRequireDefault(_setAuthorizationToken);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// after login set the current user
 function setCurrentUser(user) {
   return {
     type: "SET_CURRENT_USER",
@@ -171,7 +176,7 @@ function invalidUser(invalid) {
     invalid: invalid
   };
 }
-
+// fetch login data
 function login(userData) {
   return function (dispatch) {
     return _axios2.default.post('/user/auth', userData).then(function (res) {
@@ -268,6 +273,7 @@ function fetchSingleVideo(sessionId, videoId) {
     });
   };
 }
+// fetch video listings
 function videoList(sessionId) {
   console.log("the", sessionId);
   return function (dispatch) {
@@ -377,7 +383,7 @@ var App = function (_React$Component) {
 exports.default = App;
 
 },{"react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\Login\\LoginForm.js":[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -385,19 +391,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Login = require("../../validations/Login.js");
+var _reactRedux = require('react-redux');
 
-var _Login2 = _interopRequireDefault(_Login);
+var _authActions = require('../../actions/authActions');
 
-var _reactRedux = require("react-redux");
-
-var _authActions = require("../../actions/authActions");
-
-var _TextFieldGroup = require("../../common/TextFieldGroup");
+var _TextFieldGroup = require('../../common/TextFieldGroup');
 
 var _TextFieldGroup2 = _interopRequireDefault(_TextFieldGroup);
 
@@ -429,44 +431,34 @@ var LoginForm = function (_React$Component) {
     _this.onSubmit = _this.onSubmit.bind(_this);
     return _this;
   }
-
-  // isValid() {
-  //   const { errors, isValid } = validateInput(this.state);
-  //
-  //   if(!isValid){
-  //     this.setState({ errors });
-  //   }
-  //   return isValid;
-  // }
+  // submit user state to server to check whether the user details
 
 
   _createClass(LoginForm, [{
-    key: "onSubmit",
+    key: 'onSubmit',
     value: function onSubmit(e) {
       var _this2 = this;
 
       e.preventDefault();
       this.setState({ errors: {}, isLoading: true });
       this.props.login(this.state).then(function (res) {
-        console.log(_this2.props.userData.error);
         if (_this2.props.userData.isAuthenticated) {
           var sessionData = JSON.parse(localStorage.getItem('sessionData'));
           _this2.context.router.push("/videosList/" + sessionData.sessionId);
         } else {
           _this2.setState({ errors: _this2.props.userData });
-          console.log(_this2.state.errors);
         }
       }, function (err) {
         return _this2.setState({ errors: err.response.data, isLoading: false });
       });
     }
   }, {
-    key: "onChange",
+    key: 'onChange',
     value: function onChange(e) {
       this.setState(_defineProperty({}, e.target.name, e.target.value));
     }
   }, {
-    key: "render",
+    key: 'render',
     value: function render() {
       var _state = this.state;
       var username = _state.username;
@@ -475,34 +467,34 @@ var LoginForm = function (_React$Component) {
       var isLoading = _state.isLoading;
 
       return _react2.default.createElement(
-        "form",
+        'form',
         { onSubmit: this.onSubmit },
         _react2.default.createElement(_TextFieldGroup2.default, {
-          field: "username",
+          field: 'username',
           value: username,
           onChange: this.onChange,
-          label: "Username / Email"
+          label: 'Username / Email'
         }),
         _react2.default.createElement(_TextFieldGroup2.default, {
-          field: "password",
+          field: 'password',
           value: password,
           onChange: this.onChange,
-          label: "Password",
-          type: "password"
+          label: 'Password',
+          type: 'password'
         }),
         errors.error && _react2.default.createElement(
-          "span",
+          'span',
           null,
           _react2.default.createElement(
-            "i",
-            { "class": "errorMsg" },
+            'i',
+            { 'class': 'errorMsg' },
             errors.error
           )
         ),
         _react2.default.createElement(
-          "button",
-          { className: "buttons" },
-          "LOGIN"
+          'button',
+          { className: 'buttons' },
+          'LOGIN'
         )
       );
     }
@@ -527,7 +519,7 @@ function mapStateToProps(state) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, { login: _authActions.login })(LoginForm);
 
-},{"../../actions/authActions":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\actions\\authActions.js","../../common/TextFieldGroup":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\common\\TextFieldGroup.js","../../validations/Login.js":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\validations\\Login.js","react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js","react-redux":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react-redux\\lib\\index.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\Login\\LoginPage.js":[function(require,module,exports){
+},{"../../actions/authActions":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\actions\\authActions.js","../../common/TextFieldGroup":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\common\\TextFieldGroup.js","react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js","react-redux":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react-redux\\lib\\index.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\Login\\LoginPage.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -585,7 +577,7 @@ exports.default = LoginPage;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -613,173 +605,159 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var NavigationBar = function (_React$Component) {
-  _inherits(NavigationBar, _React$Component);
+    _inherits(NavigationBar, _React$Component);
 
-  function NavigationBar(props) {
-    _classCallCheck(this, NavigationBar);
+    function NavigationBar(props) {
+        _classCallCheck(this, NavigationBar);
 
-    var _this = _possibleConstructorReturn(this, (NavigationBar.__proto__ || Object.getPrototypeOf(NavigationBar)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (NavigationBar.__proto__ || Object.getPrototypeOf(NavigationBar)).call(this, props));
 
-    _this.state = {
-      scrollTop: "",
-      offset: ""
-    };
-    _this.handleScroll = _this.handleScroll.bind(_this);
-    _this.logoColor = _this.logoColor.bind(_this);
-    return _this;
-  }
-
-  _createClass(NavigationBar, [{
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      if (window.addEventListener) {
-        window.addEventListener('scroll', this.handleScroll);
-      } else if (window.attachEvent) {
-        window.attachEvent('scroll', this.handleScroll);
-      } else {
-        window['scroll'] = this.handleScroll;
-      }
-
-      var navBar = document.getElementById('nav-bar');
-      var navPos = navBar.offsetTop;
-      console.log('navpos' + navPos);
-      this.setState({ offset: navPos });
-      this.logoColor();
+        _this.state = {
+            scrollTop: "",
+            offset: ""
+        };
+        _this.handleScroll = _this.handleScroll.bind(_this);
+        _this.logoColor = _this.logoColor.bind(_this);
+        return _this;
     }
-  }, {
-    key: "componentWillUnmount",
-    value: function componentWillUnmount() {
-      window.removeEventListener('scroll', this.handleScroll);
-      if (window.removeEventListener) {
-        window.removeEventListener('scroll', this.handleScroll);
-      } else if (window.detachEvent) {
-        window.detachEvent('scroll', this.handleScroll);
-      }
-    }
-  }, {
-    key: "logoColor",
-    value: function logoColor() {
-      var granimInstance = new Granim({
-        element: '#block-logo-canvas',
-        direction: 'left-right',
-        opacity: [1, 1],
-        states: {
-          "default-state": {
-            gradients: [['#EB3349', '#F45C43'], ['#FF8008', '#FFC837'], ['#4CB8C4', '#3CD3AD'], ['#24C6DC', '#514A9D'], ['#FF512F', '#DD2476'], ['#DA22FF', '#9733EE']],
-            transitionSpeed: 2000
-          }
+
+    _createClass(NavigationBar, [{
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            if (window.addEventListener) {
+                window.addEventListener('scroll', this.handleScroll);
+            } else if (window.attachEvent) {
+                window.attachEvent('scroll', this.handleScroll);
+            } else {
+                window['scroll'] = this.handleScroll;
+            }
+            var navBar = document.getElementById('nav-bar');
+            var navPos = navBar.offsetTop;
+            console.log('navpos' + navPos);
+            this.setState({ offset: navPos });
+            this.logoColor();
         }
-      });
-    }
-  }, {
-    key: "handleScroll",
-    value: function handleScroll(event) {
-      console.log(Math.floor(event.srcElement.body.scrollTop));
-      var itemTranslate = window.pageYOffset;
-      this.setState({ scrollTop: itemTranslate });
-    }
-  }, {
-    key: "logout",
-    value: function logout(e) {
-      e.preventDefault();
-      this.props.logout(this.props.authReducers.user.sessionId);
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      var _props$authReducers = this.props.authReducers;
-      var isAuthenticated = _props$authReducers.isAuthenticated;
-      var user = _props$authReducers.user;
+    }, {
+        key: "componentWillUnmount",
+        value: function componentWillUnmount() {
+            window.removeEventListener('scroll', this.handleScroll);
+            if (window.removeEventListener) {
+                window.removeEventListener('scroll', this.handleScroll);
+            } else if (window.detachEvent) {
+                window.detachEvent('scroll', this.handleScroll);
+            }
+        }
+    }, {
+        key: "logoColor",
+        value: function logoColor() {
+            var granimInstance = new Granim({
+                element: '#block-logo-canvas',
+                direction: 'left-right',
+                opacity: [1, 1],
+                states: {
+                    "default-state": {
+                        gradients: [['#EB3349', '#F45C43'], ['#FF8008', '#FFC837'], ['#4CB8C4', '#3CD3AD'], ['#24C6DC', '#514A9D'], ['#FF512F', '#DD2476'], ['#DA22FF', '#9733EE']],
+                        transitionSpeed: 2000
+                    }
+                }
+            });
+        }
+    }, {
+        key: "handleScroll",
+        value: function handleScroll(event) {
+            var itemTranslate = window.pageYOffset;
+            this.setState({ scrollTop: itemTranslate });
+        }
+    }, {
+        key: "logout",
+        value: function logout(e) {
+            e.preventDefault();
+            this.props.logout(this.props.authReducers.user.sessionId);
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            var _props$authReducers = this.props.authReducers;
+            var isAuthenticated = _props$authReducers.isAuthenticated;
+            var user = _props$authReducers.user;
 
-      var userLinks = _react2.default.createElement(
-        "ul",
-        { className: "nav navbar-nav" },
-        _react2.default.createElement(
-          "li",
-          { className: "nav-item active font-family" },
-          _react2.default.createElement(
-            "h4",
-            null,
-            user.username
-          )
-        ),
-        _react2.default.createElement(
-          "li",
-          { className: "nav-item" },
-          _react2.default.createElement(
-            "span",
-            { onClick: this.logout.bind(this), className: "btn btn-sm btn-outline-warning" },
-            " logout"
-          )
-        )
-      );
-
-      var guestLinks = _react2.default.createElement(
-        "p",
-        null,
-        _react2.default.createElement(
-          _reactRouter.Link,
-          { to: "login" },
-          "Login"
-        )
-      );
-
-      return (
-
-        // <nav className="main-nav" style={this.state.scrollTop > 310 ? navFixed : null}>
-        //     <ul>
-        //       {isAuthenticated ? userLinks: guestLinks}
-        //     </ul>
-        // </nav>
-
-        // <nav id="nav-bar" className={classnames('navbar','navbar-full','navbar-light','bg-faded',{'navbar-fixed-top':this.state.scrollTop > this.state.offset })} style={{'backgroundColor':'#fff'}}>
-        _react2.default.createElement(
-          "nav",
-          { id: "nav-bar", className: "navbar navbar-full navbar-light bg-faded navbar-fixed-top", style: { 'backgroundColor': '#fff' } },
-          _react2.default.createElement(
-            "div",
-            { className: "container" },
-            _react2.default.createElement(
-              "div",
-              { className: "navbar-brand" },
-              _react2.default.createElement(
-                "div",
-                { className: "block-logo" },
-                _react2.default.createElement("canvas", { id: "block-logo-canvas" }),
+            var userLinks = _react2.default.createElement(
+                "ul",
+                { className: "nav navbar-nav", style: { display: 'flex' } },
                 _react2.default.createElement(
-                  _reactRouter.Link,
-                  { to: "/videoslist/" + user.sessionId, className: "block-logo-mask" },
-                  "Granim.js"
+                    "li",
+                    { className: "nav-item active font-family" },
+                    _react2.default.createElement(
+                        "h4",
+                        null,
+                        user.username
+                    )
+                ),
+                _react2.default.createElement(
+                    "li",
+                    { className: "nav-item", style: { marginLeft: '12px' } },
+                    _react2.default.createElement(
+                        "span",
+                        { onClick: this.logout.bind(this), className: "btn btn-sm btn-outline-warning" },
+                        " logout"
+                    )
                 )
-              )
-            ),
-            _react2.default.createElement(
-              "button",
-              { className: "navbar-toggler hidden-sm-up", type: "button", "data-toggle": "collapse", "data-target": "#exCollapsingNavbar2", "aria-controls": "exCollapsingNavbar2", "aria-expanded": "false", "aria-label": "Toggle navigation" },
-              "☰"
-            ),
-            _react2.default.createElement(
-              "div",
-              { className: "collapse navbar-toggleable-xs pull-md-right navbar-toggleable-md", id: "exCollapsingNavbar2" },
-              isAuthenticated ? userLinks : guestLinks
-            )
-          )
-        )
-      );
-    }
-  }]);
+            );
+            var guestLinks = _react2.default.createElement(
+                "p",
+                null,
+                _react2.default.createElement(
+                    _reactRouter.Link,
+                    { to: "login" },
+                    "Login"
+                )
+            );
+            return _react2.default.createElement(
+                "nav",
+                { id: "nav-bar", className: "navbar navbar-full navbar-light bg-faded navbar-fixed-top", style: { 'backgroundColor': '#fff' } },
+                _react2.default.createElement(
+                    "div",
+                    { className: "container" },
+                    _react2.default.createElement(
+                        "div",
+                        { className: "navbar-brand" },
+                        _react2.default.createElement(
+                            "div",
+                            { className: "block-logo" },
+                            _react2.default.createElement("canvas", { id: "block-logo-canvas" }),
+                            _react2.default.createElement(
+                                _reactRouter.Link,
+                                { to: "/videoslist/" + user.sessionId, className: "block-logo-mask" },
+                                "Granim.js"
+                            )
+                        )
+                    ),
+                    _react2.default.createElement(
+                        "button",
+                        { className: "navbar-toggler hidden-sm-up", type: "button", "data-toggle": "collapse", "data-target": "#exCollapsingNavbar2", "aria-controls": "exCollapsingNavbar2", "aria-expanded": "false", "aria-label": "Toggle navigation" },
+                        "\u2630"
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        { className: "collapse navbar-toggleable-xs pull-md-right pull-sm-right navbar-toggleable-md", id: "exCollapsingNavbar2" },
+                        isAuthenticated ? userLinks : guestLinks
+                    )
+                )
+            );
+        }
+    }]);
 
-  return NavigationBar;
+    return NavigationBar;
 }(_react2.default.Component);
 
 NavigationBar.propTypes = {
-  authReducers: _react2.default.PropTypes.object.isRequired,
-  logout: _react2.default.PropTypes.func.isRequired
+    authReducers: _react2.default.PropTypes.object.isRequired,
+    logout: _react2.default.PropTypes.func.isRequired
 };
 function mapStateToProps(state) {
-  return {
-    authReducers: state.authReducers
-  };
+    return {
+        authReducers: state.authReducers
+    };
 }
 exports.default = (0, _reactRedux.connect)(mapStateToProps, { logout: _authActions.logout })(NavigationBar);
 
@@ -847,11 +825,7 @@ var VideosHeader = function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
-      var cameraHeader = { transform: 'translate(0px, ' + this.state.transform / 50 + '%)' };
-      var bigwheelHeader = { transform: 'translate(0px, ' + this.state.transform / 18 + '%)' };
-      var clapHeader = { transform: 'translate(0px, -' + this.state.transform / 60 + '%)' };
       var lineHeader = { transform: 'translate(0px, -' + this.state.transform / 60 + '%)' };
-      var titleHeader = { transform: 'translate(0px, ' + this.state.transform / 5 + '%)' };
       return _react2.default.createElement(
         "header",
         { className: "title-box" },
@@ -874,7 +848,7 @@ var VideosHeader = function (_React$Component) {
 
 exports.default = VideosHeader;
 
-},{"../NavigationBar":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\NavigationBar.js","../video/VideoGrid":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\video\\VideoGrid.js","react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\modals\\LoginModal.js":[function(require,module,exports){
+},{"../NavigationBar":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\NavigationBar.js","../video/VideoGrid":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\video\\VideoGrid.js","react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\landing\\LandingPage.js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -887,13 +861,13 @@ var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _WaveModal = require("boron/WaveModal");
+var _reactRouter = require("react-router");
 
-var _WaveModal2 = _interopRequireDefault(_WaveModal);
+var _reactRedux = require("react-redux");
 
-var _LoginPage = require("../Login/LoginPage");
+var _LoginForm = require("../Login/LoginForm");
 
-var _LoginPage2 = _interopRequireDefault(_LoginPage);
+var _LoginForm2 = _interopRequireDefault(_LoginForm);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -903,60 +877,124 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var LoginModal = function (_React$Component) {
-  _inherits(LoginModal, _React$Component);
+var Greetings = function (_React$Component) {
+  _inherits(Greetings, _React$Component);
 
-  function LoginModal(props) {
-    _classCallCheck(this, LoginModal);
+  function Greetings(props) {
+    _classCallCheck(this, Greetings);
 
-    var _this = _possibleConstructorReturn(this, (LoginModal.__proto__ || Object.getPrototypeOf(LoginModal)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (Greetings.__proto__ || Object.getPrototypeOf(Greetings)).call(this, props));
 
-    _this.showModal = _this.showModal.bind(_this);
-    _this.hideModal = _this.hideModal.bind(_this);
+    _this.logoColor = _this.logoColor.bind(_this);
     return _this;
   }
 
-  _createClass(LoginModal, [{
-    key: "showModal",
-    value: function showModal() {
-      this.refs.modal.show();
+  _createClass(Greetings, [{
+    key: "componentWillMount",
+    value: function componentWillMount() {
+
+      if (this.props.authReducers.isAuthenticated) {
+        var sessionData = JSON.parse(localStorage.getItem('sessionData'));
+        var sessionId = sessionData.sessionId;
+
+        var videoUrl = "videoslist/" + sessionId;
+        this.context.router.push(videoUrl);
+      }
     }
   }, {
-    key: "hideModal",
-    value: function hideModal() {
-      this.refs.modal.hide();
+    key: "componentWillUpdate",
+    value: function componentWillUpdate(nextProps) {
+      if (nextProps.authReducers.isAuthenticated) {
+        var sessionData = JSON.parse(localStorage.getItem('sessionData'));
+        var sessionId = sessionData.sessionId;
+
+        var videoUrl = "videoslist/" + sessionId;
+        this.context.router.push(videoUrl);
+      }
+    }
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.logoColor();
+    }
+  }, {
+    key: "logoColor",
+    value: function logoColor() {
+      var granimInstance = new Granim({
+        element: '#logo-canvas',
+        direction: 'left-right',
+        opacity: [1, 1],
+        states: {
+          "default-state": {
+            gradients: [['#EB3349', '#F45C43'], ['#FF8008', '#FFC837'], ['#4CB8C4', '#3CD3AD'], ['#24C6DC', '#514A9D'], ['#FF512F', '#DD2476'], ['#DA22FF', '#9733EE']],
+            transitionSpeed: 2000
+          }
+        }
+      });
     }
   }, {
     key: "render",
     value: function render() {
+      var sessionId = this.props.authReducers.user.sessionId;
+
+      var videoListUrl = "/videoslist/" + sessionId;
       return _react2.default.createElement(
         "div",
-        null,
+        { className: "landingBody" },
         _react2.default.createElement(
-          "button",
-          { onClick: this.showModal },
-          "Open"
-        ),
-        _react2.default.createElement(
-          _WaveModal2.default,
-          { ref: "modal", keyboard: this.callback },
-          _react2.default.createElement(_LoginPage2.default, null),
+          "div",
+          { className: "container contain" },
           _react2.default.createElement(
-            "button",
-            { onClick: this.hideModal },
-            "Close"
+            "div",
+            { className: "row" },
+            _react2.default.createElement(
+              "div",
+              { className: "col-xs-12" },
+              _react2.default.createElement(
+                "div",
+                { className: "bloc-logo" },
+                _react2.default.createElement(
+                  "canvas",
+                  { id: "logo-canvas" },
+                  "hello"
+                ),
+                _react2.default.createElement(
+                  "a",
+                  { className: "logo-mask" },
+                  "Granim.js"
+                )
+              )
+            ),
+            _react2.default.createElement(
+              "div",
+              { className: "col-xs-12" },
+              _react2.default.createElement(
+                "div",
+                { className: "panel pink" },
+                _react2.default.createElement(_LoginForm2.default, null)
+              )
+            )
           )
         )
       );
     }
   }]);
 
-  return LoginModal;
+  return Greetings;
 }(_react2.default.Component);
 
-exports.default = LoginModal;
+Greetings.contextTypes = {
+  router: _react2.default.PropTypes.object.isRequired
+};
 
-},{"../Login/LoginPage":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\Login\\LoginPage.js","boron/WaveModal":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\boron\\WaveModal.js","react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\rating\\DefaultRate.js":[function(require,module,exports){
+function mapStateToProps(state) {
+  return {
+    authReducers: state.authReducers
+  };
+}
+exports.default = (0, _reactRedux.connect)(mapStateToProps)(Greetings);
+
+},{"../Login/LoginForm":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\Login\\LoginForm.js","react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js","react-redux":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react-redux\\lib\\index.js","react-router":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react-router\\lib\\index.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\rating\\DefaultRate.js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1055,6 +1093,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+// star icon component
 var Star = function (_React$Component) {
   _inherits(Star, _React$Component);
 
@@ -1084,7 +1123,7 @@ exports.default = Star;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1109,233 +1148,87 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+// passing the video props to the star component.when handleClick is performed the rating gets posted
 var StarRating = function (_React$Component) {
-  _inherits(StarRating, _React$Component);
+    _inherits(StarRating, _React$Component);
 
-  function StarRating(props) {
-    _classCallCheck(this, StarRating);
+    function StarRating(props) {
+        _classCallCheck(this, StarRating);
 
-    var _this = _possibleConstructorReturn(this, (StarRating.__proto__ || Object.getPrototypeOf(StarRating)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (StarRating.__proto__ || Object.getPrototypeOf(StarRating)).call(this, props));
 
-    _this.state = {
-      rating: null,
-      hoverAt: null,
-      videoId: ""
-    };
-    return _this;
-  }
-
-  _createClass(StarRating, [{
-    key: "componentWillReceiveProps",
-    value: function componentWillReceiveProps(nextProps) {
-      if (this.props.videoId !== nextProps.videoId) {
-        var videoId = nextProps.videoId;
-
-        this.setState({ videoId: videoId });
-      }
+        _this.state = {
+            rating: null,
+            hoverAt: null,
+            videoId: ""
+        };
+        return _this;
     }
-  }, {
-    key: "handleMouseOver",
-    value: function handleMouseOver(index, event) {
-      this.state.hoverAt = index + 1;
-      this.forceUpdate();
-    }
-  }, {
-    key: "handleMouseOut",
-    value: function handleMouseOut(index, event) {
-      this.state.hoverAt = null;
-      this.forceUpdate();
-    }
-  }, {
-    key: "handleClick",
-    value: function handleClick(index, event) {
-      this.state.rating = index + 1;
-      this.forceUpdate();
-      this.props.Rating(this.state);
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      var stars = [];
-      for (var i = 0; i < 5; i++) {
-        var rating = this.state.hoverAt != null ? this.state.hoverAt : this.state.rating;
-        var selected = i < rating;
-        stars.push(_react2.default.createElement(_Star2.default, { key: i, selected: selected,
-          onMouseOver: this.handleMouseOver.bind(this, i),
-          onMouseOut: this.handleMouseOut.bind(this, i),
-          onClick: this.handleClick.bind(this, i) }));
-      }
-      return _react2.default.createElement(
-        "div",
-        null,
-        stars
-      );
-    }
-  }]);
 
-  return StarRating;
+    _createClass(StarRating, [{
+        key: "componentWillReceiveProps",
+        value: function componentWillReceiveProps(nextProps) {
+            if (this.props.videoId !== nextProps.videoId) {
+                var videoId = nextProps.videoId;
+
+                this.setState({ rating: null });
+                this.setState({ videoId: videoId });
+            }
+        }
+    }, {
+        key: "handleMouseOver",
+        value: function handleMouseOver(index, event) {
+            this.state.hoverAt = index + 1;
+            this.forceUpdate();
+        }
+    }, {
+        key: "handleMouseOut",
+        value: function handleMouseOut(index, event) {
+            this.state.hoverAt = null;
+            this.forceUpdate();
+        }
+    }, {
+        key: "handleClick",
+        value: function handleClick(index, event) {
+            this.state.rating = index + 1;
+            this.forceUpdate();
+            this.props.Rating(this.state);
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            var stars = [];
+            for (var i = 0; i < 5; i++) {
+                var rating = this.state.hoverAt != null ? this.state.hoverAt : this.state.rating;
+                var selected = i < rating;
+                stars.push(_react2.default.createElement(_Star2.default, { key: i, selected: selected,
+                    onMouseOver: this.handleMouseOver.bind(this, i),
+                    onMouseOut: this.handleMouseOut.bind(this, i),
+                    onClick: this.handleClick.bind(this, i) }));
+            }
+            return _react2.default.createElement(
+                "div",
+                null,
+                stars
+            );
+        }
+    }]);
+
+    return StarRating;
 }(_react2.default.Component);
 
 function mapStateToProps(state) {
-  video: state.videoReducers.video;
+    return {
+        video: state.videoReducers.video
+    };
 }
 exports.default = (0, _reactRedux.connect)(mapStateToProps, { Rating: _RatingActions.Rating })(StarRating);
 
-},{"../../actions/RatingActions":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\actions\\RatingActions.js","./Star":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\rating\\Star.js","react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js","react-redux":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react-redux\\lib\\index.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\test\\Greetings.js":[function(require,module,exports){
+},{"../../actions/RatingActions":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\actions\\RatingActions.js","./Star":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\rating\\Star.js","react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js","react-redux":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react-redux\\lib\\index.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\video\\SingleVideoPage.js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = require("react");
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactRouter = require("react-router");
-
-var _reactRedux = require("react-redux");
-
-var _LoginModal = require("../modals/LoginModal");
-
-var _LoginModal2 = _interopRequireDefault(_LoginModal);
-
-var _LoginForm = require("../Login/LoginForm");
-
-var _LoginForm2 = _interopRequireDefault(_LoginForm);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Greetings = function (_React$Component) {
-  _inherits(Greetings, _React$Component);
-
-  function Greetings(props) {
-    _classCallCheck(this, Greetings);
-
-    var _this = _possibleConstructorReturn(this, (Greetings.__proto__ || Object.getPrototypeOf(Greetings)).call(this, props));
-
-    _this.logoColor = _this.logoColor.bind(_this);
-    return _this;
-  }
-
-  _createClass(Greetings, [{
-    key: "componentWillMount",
-    value: function componentWillMount() {
-
-      if (this.props.authReducers.isAuthenticated) {
-        var sessionData = JSON.parse(localStorage.getItem('sessionData'));
-        var sessionId = sessionData.sessionId;
-
-        var videoUrl = "videoslist/" + sessionId;
-        this.context.router.push(videoUrl);
-      }
-    }
-  }, {
-    key: "componentWillUpdate",
-    value: function componentWillUpdate(nextProps) {
-      if (nextProps.authReducers.isAuthenticated) {
-        var sessionData = JSON.parse(localStorage.getItem('sessionData'));
-        var sessionId = sessionData.sessionId;
-
-        var videoUrl = "videoslist/" + sessionId;
-        this.context.router.push(videoUrl);
-      }
-    }
-  }, {
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      this.logoColor();
-    }
-  }, {
-    key: "logoColor",
-    value: function logoColor() {
-      var granimInstance = new Granim({
-        element: '#logo-canvas',
-        direction: 'left-right',
-        opacity: [1, 1],
-        states: {
-          "default-state": {
-            gradients: [['#EB3349', '#F45C43'], ['#FF8008', '#FFC837'], ['#4CB8C4', '#3CD3AD'], ['#24C6DC', '#514A9D'], ['#FF512F', '#DD2476'], ['#DA22FF', '#9733EE']],
-            transitionSpeed: 2000
-          }
-        }
-      });
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      var sessionId = this.props.authReducers.user.sessionId;
-
-      var videoListUrl = "/videoslist/" + sessionId;
-      return _react2.default.createElement(
-        "div",
-        { className: "landingBody" },
-        _react2.default.createElement(
-          "div",
-          { className: "container contain", style: { 'width': '75%' } },
-          _react2.default.createElement(
-            "div",
-            { className: "row" },
-            _react2.default.createElement(
-              "div",
-              { className: "col-xs-12" },
-              _react2.default.createElement(
-                "div",
-                { className: "bloc-logo" },
-                _react2.default.createElement(
-                  "canvas",
-                  { id: "logo-canvas" },
-                  "hello"
-                ),
-                _react2.default.createElement(
-                  "a",
-                  { className: "logo-mask" },
-                  "Granim.js"
-                )
-              )
-            ),
-            _react2.default.createElement(
-              "div",
-              { className: "col-xs-12" },
-              _react2.default.createElement(
-                "div",
-                { className: "panel pink" },
-                _react2.default.createElement(_LoginForm2.default, null)
-              )
-            )
-          )
-        )
-      );
-    }
-  }]);
-
-  return Greetings;
-}(_react2.default.Component);
-
-Greetings.contextTypes = {
-  router: _react2.default.PropTypes.object.isRequired
-};
-
-function mapStateToProps(state) {
-  return {
-    authReducers: state.authReducers
-  };
-}
-exports.default = (0, _reactRedux.connect)(mapStateToProps)(Greetings);
-
-},{"../Login/LoginForm":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\Login\\LoginForm.js","../modals/LoginModal":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\modals\\LoginModal.js","react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js","react-redux":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react-redux\\lib\\index.js","react-router":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react-router\\lib\\index.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\video\\SingleVideoPage.js":[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1373,219 +1266,210 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var SingleVideoPage = function (_React$Component) {
-  _inherits(SingleVideoPage, _React$Component);
+    _inherits(SingleVideoPage, _React$Component);
 
-  function SingleVideoPage(props) {
-    _classCallCheck(this, SingleVideoPage);
+    function SingleVideoPage(props) {
+        _classCallCheck(this, SingleVideoPage);
 
-    var _this = _possibleConstructorReturn(this, (SingleVideoPage.__proto__ || Object.getPrototypeOf(SingleVideoPage)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (SingleVideoPage.__proto__ || Object.getPrototypeOf(SingleVideoPage)).call(this, props));
 
-    _this.state = {
-      video: {
-        name: '',
-        description: '',
-        ratings: [2, 4]
-      },
-      sessionId: "",
-      expanded: false
-    };
-    _this.expandedText = _this.expandedText.bind(_this);
-    _this.getMoretext = _this.getMoretext.bind(_this);
-    return _this;
-  }
-
-  _createClass(SingleVideoPage, [{
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      window.scrollTo(0, 0);
+        _this.state = {
+            video: {
+                name: '',
+                description: '',
+                ratings: [2, 4]
+            },
+            sessionId: "",
+            expanded: false
+        };
+        _this.expandedText = _this.expandedText.bind(_this);
+        _this.getMoretext = _this.getMoretext.bind(_this);
+        return _this;
     }
-  }, {
-    key: "componentWillMount",
-    value: function componentWillMount() {
-      var _props$params = this.props.params;
-      var sessionId = _props$params.sessionId;
-      var videoId = _props$params.videoId;
 
-      this.setState({ sessionId: sessionId });
-      this.props.fetchSingleVideo(sessionId, videoId);
-    }
-  }, {
-    key: "componentWillReceiveProps",
-    value: function componentWillReceiveProps(nextProps) {
-      console.log(nextProps);
+    _createClass(SingleVideoPage, [{
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            window.scrollTo(0, 0);
+        }
+    }, {
+        key: "componentWillMount",
+        value: function componentWillMount() {
+            var _props$params = this.props.params;
+            var sessionId = _props$params.sessionId;
+            var videoId = _props$params.videoId;
 
-      if (this.props.video !== nextProps.video) {
-        this.setState({ video: nextProps.video });
-        this.setState({ expanded: false });
-      }
-    }
-  }, {
-    key: "componentDidUpdate",
-    value: function componentDidUpdate(prevProps) {
-      var _props$params2 = this.props.params;
-      var sessionId = _props$params2.sessionId;
-      var videoId = _props$params2.videoId;
+            this.setState({ sessionId: sessionId });
+            this.props.fetchSingleVideo(sessionId, videoId);
+        }
+    }, {
+        key: "componentWillReceiveProps",
+        value: function componentWillReceiveProps(nextProps) {
+            console.log(nextProps);
+            if (this.props.video !== nextProps.video) {
+                this.setState({ video: nextProps.video });
+                this.setState({ expanded: false });
+            }
+        }
+    }, {
+        key: "componentDidUpdate",
+        value: function componentDidUpdate(prevProps) {
+            var _props$params2 = this.props.params;
+            var sessionId = _props$params2.sessionId;
+            var videoId = _props$params2.videoId;
 
-      if (prevProps.params !== this.props.params) {
-        this.props.fetchSingleVideo(sessionId, videoId);
-      }
-    }
-  }, {
-    key: "expandedText",
-    value: function expandedText() {
-      this.setState({ expanded: true });
-    }
-  }, {
-    key: "getMoretext",
-    value: function getMoretext() {
-      if (this.state.expanded) {
-        return this.state.video.description.substring(180);
-      } else {
-        return null;
-      }
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      var _this2 = this;
+            if (prevProps.params !== this.props.params) {
+                this.props.fetchSingleVideo(sessionId, videoId);
+            }
+        }
+    }, {
+        key: "expandedText",
+        value: function expandedText() {
+            this.setState({ expanded: true });
+        }
+    }, {
+        key: "getMoretext",
+        value: function getMoretext() {
+            if (this.state.expanded) {
+                return this.state.video.description.substring(180);
+            } else {
+                return null;
+            }
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            var _this2 = this;
 
-      var video = this.state.video;
-      var videos = this.props.videos;
+            var video = this.state.video;
+            var videos = this.props.videos;
 
-      var videoUrl = "/" + video.url;
-      var expandedTexts = this.getMoretext();
-
-      var videoList = (0, _lodash.map)(videos, function (video, i) {
-        return _react2.default.createElement(
-          "div",
-          { className: "media", key: i },
-          _react2.default.createElement(
-            _reactRouter.Link,
-            { className: "media-left", to: "/video/" + _this2.state.sessionId + "/" + video._id },
-            _react2.default.createElement("video", { className: "media-object", src: "/" + video.url, width: "120", height: "120" })
-          ),
-          _react2.default.createElement(
-            "div",
-            { className: "media-body medialist-body" },
-            _react2.default.createElement(
-              "h6",
-              { className: "media-heading" },
-              video.name.substring(3)
-            ),
-            _react2.default.createElement(
-              "p",
-              { className: "lead p-margin" },
-              video.description.substring(0, 60)
-            ),
-            _react2.default.createElement(
-              "div",
-              { className: "card-text" },
-              _react2.default.createElement(
-                "small",
-                { className: "text-muted" },
-                _react2.default.createElement(_DefaultRate2.default, { rating: video.ratings })
-              )
-            )
-          )
-        );
-      });
-
-      return (
-        // <div>
-        // <h1>this is activeVideo page {video.name}</h1>
-        // <video ref={video._id} src={videoUrl} width="520" height="440" controls autoPlay>
-        // </video>
-        // </div>
-        _react2.default.createElement(
-          "div",
-          null,
-          _react2.default.createElement("div", { style: { paddingBottom: '34px' } }),
-          _react2.default.createElement(_NavigationBar2.default, null),
-          _react2.default.createElement(
-            "div",
-            { className: "container", style: { 'marginTop': '30px' } },
-            _react2.default.createElement(
-              "div",
-              { className: "row" },
-              _react2.default.createElement(
-                "div",
-                { className: "col-md-8" },
-                _react2.default.createElement(
-                  "div",
-                  { className: "card" },
-                  _react2.default.createElement("video", { className: "card-img-top", ref: video._id, src: videoUrl, width: "100%", controls: true, autoPlay: true })
-                ),
-                _react2.default.createElement(
-                  "div",
-                  { className: "card" },
-                  _react2.default.createElement(
+            var videoUrl = "/" + video.url;
+            var expandedTexts = this.getMoretext();
+            //fetch video listings
+            var videoList = (0, _lodash.map)(videos, function (video, i) {
+                return _react2.default.createElement(
                     "div",
-                    { className: "card-block" },
+                    { className: "media", key: i },
                     _react2.default.createElement(
-                      "h4",
-                      { className: "card-title" },
-                      video.name.substring(4)
+                        _reactRouter.Link,
+                        { className: "media-left", to: "/video/" + _this2.state.sessionId + "/" + video._id },
+                        _react2.default.createElement("video", { className: "media-object", src: "/" + video.url, width: "120", height: "120" })
                     ),
                     _react2.default.createElement(
-                      "div",
-                      { className: "text-xs-right" },
-                      _react2.default.createElement(_DefaultRate2.default, { rating: video.ratings })
-                    ),
-                    _react2.default.createElement(
-                      "p",
-                      { className: "card-text" },
-                      video.description.substring(0, 180),
-                      !this.state.expanded ? _react2.default.createElement(
-                        "a",
-                        { onClick: this.expandedText },
-                        " Read more"
-                      ) : null,
-                      expandedTexts
+                        "div",
+                        { className: "media-body medialist-body" },
+                        _react2.default.createElement(
+                            "h6",
+                            { className: "media-heading" },
+                            video.name.substring(3)
+                        ),
+                        _react2.default.createElement(
+                            "p",
+                            { className: "lead p-margin" },
+                            video.description.substring(0, 60)
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "card-text" },
+                            _react2.default.createElement(
+                                "small",
+                                { className: "text-muted" },
+                                _react2.default.createElement(_DefaultRate2.default, { rating: video.ratings })
+                            )
+                        )
                     )
-                  ),
-                  _react2.default.createElement(
-                    "div",
-                    { className: "container-fluid" },
-                    _react2.default.createElement(
-                      "ul",
-                      { className: "list-group list-group-flush" },
-                      _react2.default.createElement(
-                        "li",
-                        { className: "list-group-item" },
-                        _react2.default.createElement(_StarRating2.default, { videoId: video._id })
-                      )
-                    )
-                  )
-                )
-              ),
-              _react2.default.createElement(
+                );
+            });
+            return _react2.default.createElement(
                 "div",
-                { className: "col-md-4" },
+                null,
+                _react2.default.createElement("div", { style: { paddingBottom: '34px' } }),
+                _react2.default.createElement(_NavigationBar2.default, null),
                 _react2.default.createElement(
-                  "div",
-                  { className: "card" },
-                  _react2.default.createElement(
                     "div",
-                    { className: "container-fluid" },
-                    videoList
-                  )
+                    { className: "container", style: { 'marginTop': '30px' } },
+                    _react2.default.createElement(
+                        "div",
+                        { className: "row" },
+                        _react2.default.createElement(
+                            "div",
+                            { className: "col-md-8" },
+                            _react2.default.createElement(
+                                "div",
+                                { className: "card" },
+                                _react2.default.createElement("video", { className: "card-img-top", ref: video._id, src: videoUrl, width: "100%", controls: true, autoPlay: true })
+                            ),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "card" },
+                                _react2.default.createElement(
+                                    "div",
+                                    { className: "card-block" },
+                                    _react2.default.createElement(
+                                        "h4",
+                                        { className: "card-title" },
+                                        video.name.substring(4)
+                                    ),
+                                    _react2.default.createElement(
+                                        "div",
+                                        { className: "text-xs-right" },
+                                        _react2.default.createElement(_DefaultRate2.default, { rating: video.ratings })
+                                    ),
+                                    _react2.default.createElement(
+                                        "p",
+                                        { className: "card-text" },
+                                        video.description.substring(0, 180),
+                                        !this.state.expanded ? _react2.default.createElement(
+                                            "a",
+                                            { onClick: this.expandedText },
+                                            " Read more"
+                                        ) : null,
+                                        expandedTexts
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    "div",
+                                    { className: "container-fluid" },
+                                    _react2.default.createElement(
+                                        "ul",
+                                        { className: "list-group list-group-flush" },
+                                        _react2.default.createElement(
+                                            "li",
+                                            { className: "list-group-item" },
+                                            _react2.default.createElement(_StarRating2.default, { videoId: video._id })
+                                        )
+                                    )
+                                )
+                            )
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "col-md-4" },
+                            _react2.default.createElement(
+                                "div",
+                                { className: "card" },
+                                _react2.default.createElement(
+                                    "div",
+                                    { className: "container-fluid" },
+                                    videoList
+                                )
+                            )
+                        )
+                    )
                 )
-              )
-            )
-          )
-        )
-      );
-    }
-  }]);
+            );
+        }
+    }]);
 
-  return SingleVideoPage;
+    return SingleVideoPage;
 }(_react2.default.Component);
 
 function mapStateToProps(state) {
-  return {
-    video: state.videoReducers.activeVideo,
-    videos: state.videoReducers.videos
-  };
+    return {
+        video: state.videoReducers.activeVideo,
+        videos: state.videoReducers.videos
+    };
 }
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, { fetchSingleVideo: _videoActions.fetchSingleVideo })(SingleVideoPage);
@@ -1594,7 +1478,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, { fetchSingleVideo: 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1624,80 +1508,71 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var Video = function (_React$Component) {
-  _inherits(Video, _React$Component);
+    _inherits(Video, _React$Component);
 
-  function Video(props) {
-    _classCallCheck(this, Video);
+    function Video(props) {
+        _classCallCheck(this, Video);
 
-    var _this = _possibleConstructorReturn(this, (Video.__proto__ || Object.getPrototypeOf(Video)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (Video.__proto__ || Object.getPrototypeOf(Video)).call(this, props));
 
-    _this.onPlay = _this.onPlay.bind(_this);
-    _this.onPaused = _this.onPaused.bind(_this);
-    return _this;
-  }
-
-  _createClass(Video, [{
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      var refId = this.refs[this.props.video._id];
-      refId;
+        _this.onPlay = _this.onPlay.bind(_this);
+        _this.onPaused = _this.onPaused.bind(_this);
+        return _this;
     }
-  }, {
-    key: "componentWillMount",
-    value: function componentWillMount() {
-      if (window.matchMedia("(min-width: 400px)").matches) {
-        /* the viewport is at least 400 pixels wide */
-      } else {
-          /* the viewport is less than 400 pixels wide */
+
+    _createClass(Video, [{
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            var refId = this.refs[this.props.video._id];
+            refId;
         }
-    }
-  }, {
-    key: "onPlay",
-    value: function onPlay() {
-      this.props.onPlay(this.props.video._id);
-    }
-  }, {
-    key: "onPaused",
-    value: function onPaused() {
-      this.props.onPause(this.props.video._id);
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      var video = this.props.video;
+    }, {
+        key: "onPlay",
+        value: function onPlay() {
+            this.props.onPlay(this.props.video._id);
+        }
+    }, {
+        key: "onPaused",
+        value: function onPaused() {
+            this.props.onPause(this.props.video._id);
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            var video = this.props.video;
 
-      var videoUrl = "/video/" + this.props.sessionId + "/" + video._id;
-      return _react2.default.createElement(
-        "div",
-        { className: "video-card" },
-        _react2.default.createElement(_VideoUtil2.default, { className: "video-card-header video-width", playing: video.playing, onPlayu: this.onPlay, onPause: this.onPaused, ref: video._id, refId: video._id, srcUrl: "/" + video.url }),
-        _react2.default.createElement(
-          "div",
-          { className: "video-card-summary" },
-          _react2.default.createElement(
-            _reactRouter.Link,
-            { to: videoUrl },
-            _react2.default.createElement(
-              "p",
-              null,
-              video.name.substring(3)
-            )
-          )
-        ),
-        _react2.default.createElement(
-          "div",
-          { className: "video-card-meta" },
-          _react2.default.createElement(_DefaultRate2.default, { rating: video.ratings })
-        )
-      );
-    }
-  }]);
+            var videoUrl = "/video/" + this.props.sessionId + "/" + video._id;
+            return _react2.default.createElement(
+                "div",
+                { className: "video-card" },
+                _react2.default.createElement(_VideoUtil2.default, { className: "video-card-header video-width", playing: video.playing, onPlayu: this.onPlay, onPause: this.onPaused, ref: video._id, refId: video._id, srcUrl: "/" + video.url }),
+                _react2.default.createElement(
+                    "div",
+                    { className: "video-card-summary" },
+                    _react2.default.createElement(
+                        _reactRouter.Link,
+                        { to: videoUrl },
+                        _react2.default.createElement(
+                            "p",
+                            null,
+                            video.name.substring(3)
+                        )
+                    )
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "video-card-meta" },
+                    _react2.default.createElement(_DefaultRate2.default, { rating: video.ratings })
+                )
+            );
+        }
+    }]);
 
-  return Video;
+    return Video;
 }(_react2.default.Component);
 
 Video.contextTypes = {
-  router: _react2.default.PropTypes.object.isRequired
+    router: _react2.default.PropTypes.object.isRequired
 };
 
 exports.default = Video;
@@ -1756,6 +1631,9 @@ var VideoGrid = function (_React$Component) {
       console.log(sessionId);
       this.props.videoList(sessionId);
     }
+
+    //map the videos
+
   }, {
     key: "render",
     value: function render() {
@@ -1878,7 +1756,7 @@ var VideoUtil = function (_React$Component) {
   _createClass(VideoUtil, [{
     key: "playOrPause",
     value: function playOrPause() {
-      var videoElement = this.refs[this.props.refId];
+      var videoElement = this.refs[this.props.refId]; //by using these user won't be able to pay more than one video on video listings
       if (videoElement.paused) {
         videoElement.play();
       } else {
@@ -1913,13 +1791,10 @@ var VideoUtil = function (_React$Component) {
       var onPause = _props.onPause;
       var className = _props.className;
 
-      return (
-        // <video ref="video" src={this.props.src} controls/>
-        _react2.default.createElement(
-          "video",
-          { className: className, ref: refId, width: "100%", height: "auto", controls: true, onPlay: onPlayu, onPause: onPause },
-          _react2.default.createElement("source", { src: srcUrl })
-        )
+      return _react2.default.createElement(
+        "video",
+        { className: className, ref: refId, width: "100%", height: "auto", controls: true, onPlay: onPlayu, onPause: onPause },
+        _react2.default.createElement("source", { src: srcUrl })
       );
     }
   }]);
@@ -1950,7 +1825,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -1961,31 +1836,32 @@ var _isEmpty2 = _interopRequireDefault(_isEmpty);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//this is the initialState of the Authentication
 var initialState = {
-  isAuthenticated: false,
-  user: {},
-  error: {}
+    isAuthenticated: false,
+    user: {},
+    error: {}
 };
 
 exports.default = function () {
-  var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
-  var action = arguments[1];
+    var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
+    var action = arguments[1];
 
-  switch (action.type) {
-    case "SET_CURRENT_USER":
-      console.log("hello");
-      return _extends({}, state, {
-        isAuthenticated: !(0, _isEmpty2.default)(action.user),
-        user: action.user
-      });
-    case "INVALID_USER":
-      console.log(action.invalid);
-      return _extends({}, state, {
-        error: action.invalid
-      });
-    default:
-      return state;
-  }
+    switch (action.type) {
+        case "SET_CURRENT_USER":
+            console.log("hello");
+            return _extends({}, state, {
+                isAuthenticated: !(0, _isEmpty2.default)(action.user),
+                user: action.user
+            });
+        case "INVALID_USER":
+            console.log(action.invalid);
+            return _extends({}, state, {
+                error: action.invalid
+            });
+        default:
+            return state;
+    }
 };
 
 },{"lodash/isEmpty":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\lodash\\isEmpty.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\reducers\\videoReducers.js":[function(require,module,exports){
@@ -1995,7 +1871,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -2009,6 +1885,7 @@ var _lodash = require("lodash");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//this is the initialState of the video component
 var initialState = {
     videos: [],
     activeVideo: {}
@@ -2031,10 +1908,8 @@ exports.default = function () {
             };
         case _types.PLAY_VIDEO:
             return onPlay(state, action);
-
         case _types.PAUSE_VIDEO:
             return onPause(state, action);
-
         case _types.SINGLE_VIDEO:
             return onClick(state, action);
         case "RATE_VIDEO":
@@ -2043,6 +1918,8 @@ exports.default = function () {
             return state;
     }
 };
+//when selected a video to play..make the isplaying to true
+
 
 function onPlay(state, action) {
     console.log("oldState " + state);
@@ -2054,15 +1931,13 @@ function onPlay(state, action) {
         return v.playing = false;
     });
     newVideos[index]['playing'] = true;
-
     var newState = _extends({}, state, {
         videos: newVideos
-
     });
     console.log("newState " + newState);
     return newState;
 }
-
+//when another video/ video is paused .make the isplaying to false
 function onPause(state, action) {
     console.log("oldState " + state);
     var index = (0, _lodash.findIndex)(state.videos, {
@@ -2072,7 +1947,6 @@ function onPause(state, action) {
     newVideos[index]['playing'] = false;
     var newState = _extends({}, state, {
         videos: newVideos
-
     });
     console.log("newState " + newState);
     return newState;
@@ -2080,7 +1954,6 @@ function onPause(state, action) {
 
 function onClick(state, action) {
     var video = action.video;
-
 
     return _extends({}, state, {
         activeVideo: video.data
@@ -2146,9 +2019,9 @@ var _VideoPage = require("./components/video/VideoPage");
 
 var _VideoPage2 = _interopRequireDefault(_VideoPage);
 
-var _Greetings = require("./components/test/Greetings");
+var _LandingPage = require("./components/landing/LandingPage");
 
-var _Greetings2 = _interopRequireDefault(_Greetings);
+var _LandingPage2 = _interopRequireDefault(_LandingPage);
 
 var _SingleVideoPage = require("./components/video/SingleVideoPage");
 
@@ -2163,13 +2036,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = _react2.default.createElement(
   _reactRouter.Route,
   { path: "/", component: _App2.default },
-  _react2.default.createElement(_reactRouter.IndexRoute, { component: _Greetings2.default }),
+  _react2.default.createElement(_reactRouter.IndexRoute, { component: _LandingPage2.default }),
   _react2.default.createElement(_reactRouter.Route, { path: "/login", component: _LoginPage2.default }),
   _react2.default.createElement(_reactRouter.Route, { path: "/videoslist/:sessionId", component: (0, _requireAuth2.default)(_VideoPage2.default) }),
   _react2.default.createElement(_reactRouter.Route, { path: "/video/:sessionId/:videoId", component: (0, _requireAuth2.default)(_SingleVideoPage2.default) })
 );
 
-},{"./components/App.js":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\App.js","./components/Login/LoginPage":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\Login\\LoginPage.js","./components/test/Greetings":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\test\\Greetings.js","./components/video/SingleVideoPage":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\video\\SingleVideoPage.js","./components/video/VideoPage":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\video\\VideoPage.js","./utilities/requireAuth":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\utilities\\requireAuth.js","react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js","react-router":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react-router\\lib\\index.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\utilities\\requireAuth.js":[function(require,module,exports){
+},{"./components/App.js":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\App.js","./components/Login/LoginPage":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\Login\\LoginPage.js","./components/landing/LandingPage":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\landing\\LandingPage.js","./components/video/SingleVideoPage":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\video\\SingleVideoPage.js","./components/video/VideoPage":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\components\\video\\VideoPage.js","./utilities/requireAuth":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\utilities\\requireAuth.js","react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js","react-router":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react-router\\lib\\index.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\utilities\\requireAuth.js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2193,14 +2066,14 @@ exports.default = function (ComposedComponent) {
       value: function componentWillMount() {
 
         if (!this.props.isAuthenticated) {
-          this.context.router.push("/");
+          this.context.router.push("/"); //checks before the render
         }
       }
     }, {
       key: "componentWillUpdate",
       value: function componentWillUpdate(nextProps) {
         if (!nextProps.isAuthenticated) {
-          this.context.router.push("/");
+          this.context.router.push("/"); //if the user loggedout the redirects to the LoginPage
         }
       }
     }, {
@@ -2243,6 +2116,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+// by using this higher component stuture, we are checking that user as access to the page, if not redirect to the login page
+
 },{"react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js","react-redux":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react-redux\\lib\\index.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\utilities\\setAuthorizationToken.js":[function(require,module,exports){
 'use strict';
 
@@ -2257,6 +2132,7 @@ var _axios2 = _interopRequireDefault(_axios);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//set the axios header to current user
 function setAuthorizationToken(token) {
   if (token) {
     console.log(token);
@@ -2266,41 +2142,7 @@ function setAuthorizationToken(token) {
   }
 }
 
-},{"axios":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\axios\\index.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\client\\src\\validations\\Login.js":[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = validateInput;
-
-var _validator = require("validator");
-
-var _validator2 = _interopRequireDefault(_validator);
-
-var _isEmpty = require("lodash/isEmpty");
-
-var _isEmpty2 = _interopRequireDefault(_isEmpty);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function validateInput(data) {
-  var errors = {};
-  if (_validator2.default.isNull(data.username)) {
-    errors.username = "This field is required";
-  }
-
-  if (_validator2.default.isNull(data.password)) {
-    errors.password = "This field is required";
-  }
-
-  return {
-    errors: errors,
-    isvalid: (0, _isEmpty2.default)(errors)
-  };
-}
-
-},{"lodash/isEmpty":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\lodash\\isEmpty.js","validator":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\index.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\axios\\index.js":[function(require,module,exports){
+},{"axios":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\axios\\index.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\axios\\index.js":[function(require,module,exports){
 module.exports = require('./lib/axios');
 },{"./lib/axios":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\axios\\lib\\axios.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\axios\\lib\\adapters\\xhr.js":[function(require,module,exports){
 (function (process){
@@ -3560,431 +3402,7 @@ module.exports = {
   trim: trim
 };
 
-},{"./helpers/bind":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\axios\\lib\\helpers\\bind.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\boron\\WaveModal.js":[function(require,module,exports){
-var modalFactory = require('./modalFactory');
-var insertKeyframesRule = require('domkit/insertKeyframesRule');
-var appendVendorPrefix = require('domkit/appendVendorPrefix');
-
-var animation = {
-    show: {
-        animationDuration: '1s',
-        animationTimingFunction: 'linear'
-    },
-    hide: {
-        animationDuration: '0.3s',
-        animationTimingFunction: 'ease-out'
-    },
-    showContentAnimation: insertKeyframesRule({
-        '0%': {
-            opacity: 0,
-            transform: 'matrix3d(0.7, 0, 0, 0, 0, 0.7, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '2.083333%': {
-            transform: 'matrix3d(0.75266, 0, 0, 0, 0, 0.76342, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '4.166667%': {
-            transform: 'matrix3d(0.81071, 0, 0, 0, 0, 0.84545, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '6.25%': {
-            transform: 'matrix3d(0.86808, 0, 0, 0, 0, 0.9286, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '8.333333%': {
-            transform: 'matrix3d(0.92038, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '10.416667%': {
-            transform: 'matrix3d(0.96482, 0, 0, 0, 0, 1.05202, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '12.5%': {
-            transform: 'matrix3d(1, 0, 0, 0, 0, 1.08204, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '14.583333%': {
-            transform: 'matrix3d(1.02563, 0, 0, 0, 0, 1.09149, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '16.666667%': {
-            transform: 'matrix3d(1.04227, 0, 0, 0, 0, 1.08453, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '18.75%': {
-            transform: 'matrix3d(1.05102, 0, 0, 0, 0, 1.06666, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '20.833333%': {
-            transform: 'matrix3d(1.05334, 0, 0, 0, 0, 1.04355, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '22.916667%': {
-            transform: 'matrix3d(1.05078, 0, 0, 0, 0, 1.02012, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '25%': {
-            transform: 'matrix3d(1.04487, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '27.083333%': {
-            transform: 'matrix3d(1.03699, 0, 0, 0, 0, 0.98534, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '29.166667%': {
-            transform: 'matrix3d(1.02831, 0, 0, 0, 0, 0.97688, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '31.25%': {
-            transform: 'matrix3d(1.01973, 0, 0, 0, 0, 0.97422, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '33.333333%': {
-            transform: 'matrix3d(1.01191, 0, 0, 0, 0, 0.97618, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '35.416667%': {
-            transform: 'matrix3d(1.00526, 0, 0, 0, 0, 0.98122, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '37.5%': {
-            transform: 'matrix3d(1, 0, 0, 0, 0, 0.98773, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '39.583333%': {
-            transform: 'matrix3d(0.99617, 0, 0, 0, 0, 0.99433, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '41.666667%': {
-            transform: 'matrix3d(0.99368, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '43.75%': {
-            transform: 'matrix3d(0.99237, 0, 0, 0, 0, 1.00413, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '45.833333%': {
-            transform: 'matrix3d(0.99202, 0, 0, 0, 0, 1.00651, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '47.916667%': {
-            transform: 'matrix3d(0.99241, 0, 0, 0, 0, 1.00726, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '50%': {
-            opacity: 1,
-            transform: 'matrix3d(0.99329, 0, 0, 0, 0, 1.00671, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '52.083333%': {
-            transform: 'matrix3d(0.99447, 0, 0, 0, 0, 1.00529, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '54.166667%': {
-            transform: 'matrix3d(0.99577, 0, 0, 0, 0, 1.00346, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '56.25%': {
-            transform: 'matrix3d(0.99705, 0, 0, 0, 0, 1.0016, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '58.333333%': {
-            transform: 'matrix3d(0.99822, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '60.416667%': {
-            transform: 'matrix3d(0.99921, 0, 0, 0, 0, 0.99884, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '62.5%': {
-            transform: 'matrix3d(1, 0, 0, 0, 0, 0.99816, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '64.583333%': {
-            transform: 'matrix3d(1.00057, 0, 0, 0, 0, 0.99795, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '66.666667%': {
-            transform: 'matrix3d(1.00095, 0, 0, 0, 0, 0.99811, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '68.75%': {
-            transform: 'matrix3d(1.00114, 0, 0, 0, 0, 0.99851, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '70.833333%': {
-            transform: 'matrix3d(1.00119, 0, 0, 0, 0, 0.99903, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '72.916667%': {
-            transform: 'matrix3d(1.00114, 0, 0, 0, 0, 0.99955, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '75%': {
-            transform: 'matrix3d(1.001, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '77.083333%': {
-            transform: 'matrix3d(1.00083, 0, 0, 0, 0, 1.00033, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '79.166667%': {
-            transform: 'matrix3d(1.00063, 0, 0, 0, 0, 1.00052, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '81.25%': {
-            transform: 'matrix3d(1.00044, 0, 0, 0, 0, 1.00058, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '83.333333%': {
-            transform: 'matrix3d(1.00027, 0, 0, 0, 0, 1.00053, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '85.416667%': {
-            transform: 'matrix3d(1.00012, 0, 0, 0, 0, 1.00042, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '87.5%': {
-            transform: 'matrix3d(1, 0, 0, 0, 0, 1.00027, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '89.583333%': {
-            transform: 'matrix3d(0.99991, 0, 0, 0, 0, 1.00013, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '91.666667%': {
-            transform: 'matrix3d(0.99986, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '93.75%': {
-            transform: 'matrix3d(0.99983, 0, 0, 0, 0, 0.99991, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '95.833333%': {
-            transform: 'matrix3d(0.99982, 0, 0, 0, 0, 0.99985, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '97.916667%': {
-            transform: 'matrix3d(0.99983, 0, 0, 0, 0, 0.99984, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        },
-        '100%': {
-            opacity: 1,
-            transform: 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
-        }
-    }),
-
-    hideContentAnimation: insertKeyframesRule({
-        '0%': {
-            opacity: 1
-        },
-        '100%': {
-            opacity: 0,
-            transform: 'scale3d(0.8, 0.8, 1)'
-        },
-    }),
-
-    showBackdropAnimation: insertKeyframesRule({
-        '0%': {
-            opacity: 0
-        },
-        '100%': {
-            opacity: 0.9
-        },
-    }),
-
-    hideBackdropAnimation: insertKeyframesRule({
-        '0%': {
-            opacity: 0.9
-        },
-        '100%': {
-            opacity: 0
-        }
-    })
-};
-
-var showAnimation = animation.show;
-var hideAnimation = animation.hide;
-var showContentAnimation = animation.showContentAnimation;
-var hideContentAnimation = animation.hideContentAnimation;
-var showBackdropAnimation = animation.showBackdropAnimation;
-var hideBackdropAnimation = animation.hideBackdropAnimation;
-
-module.exports = modalFactory({
-    getRef: function(willHidden) {
-        return 'content';
-    },
-    getModalStyle: function(willHidden) {
-        return appendVendorPrefix({
-            zIndex: 1050,
-            position: "fixed",
-            width: "500px",
-            transform: "translate3d(-50%, -50%, 0)",
-            top: "50%",
-            left: "50%"
-        })
-    },
-    getBackdropStyle: function(willHidden) {
-        return appendVendorPrefix({
-            position: "fixed",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            zIndex: 1040,
-            backgroundColor: "#373A47",
-            animationFillMode: 'forwards',
-            animationDuration: '0.3s',
-            animationName: willHidden ? hideBackdropAnimation : showBackdropAnimation,
-            animationTimingFunction: (willHidden ? hideAnimation : showAnimation).animationTimingFunction
-        });
-    },
-    getContentStyle: function(willHidden) {
-        return appendVendorPrefix({
-            margin: 0,
-            backgroundColor: "white",
-            animationDuration: (willHidden ? hideAnimation : showAnimation).animationDuration,
-            animationFillMode: 'forwards',
-            animationName: willHidden ? hideContentAnimation : showContentAnimation,
-            animationTimingFunction: (willHidden ? hideAnimation : showAnimation).animationTimingFunction
-        })
-    }
-});
-
-},{"./modalFactory":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\boron\\modalFactory.js","domkit/appendVendorPrefix":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\domkit\\appendVendorPrefix.js","domkit/insertKeyframesRule":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\domkit\\insertKeyframesRule.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\boron\\modalFactory.js":[function(require,module,exports){
-var React = require('react');
-var transitionEvents = require('domkit/transitionEvents');
-var appendVendorPrefix = require('domkit/appendVendorPrefix');
-
-module.exports = function(animation){
-
-    return React.createClass({
-        propTypes: {
-            className: React.PropTypes.string,
-            // Close the modal when esc is pressed? Defaults to true.
-            keyboard: React.PropTypes.bool,
-            onShow: React.PropTypes.func,
-            onHide: React.PropTypes.func,
-            animation: React.PropTypes.object,
-            backdrop: React.PropTypes.bool,
-            closeOnClick: React.PropTypes.bool,
-            modalStyle: React.PropTypes.object,
-            backdropStyle: React.PropTypes.object,
-            contentStyle: React.PropTypes.object,
-        },
-
-        getDefaultProps: function() {
-            return {
-                className: "",
-                onShow: function(){},
-                onHide: function(){},
-                animation: animation,
-                keyboard: true,
-                backdrop: true,
-                closeOnClick: true,
-                modalStyle: {},
-                backdropStyle: {},
-                contentStyle: {},
-            };
-        },
-
-        getInitialState: function(){
-            return {
-                willHidden: false,
-                hidden: true
-            }
-        },
-
-        hasHidden: function(){
-            return this.state.hidden;
-        },
-
-        addTransitionListener: function(node, handle){
-            if (node) {
-              var endListener = function(e) {
-                  if (e && e.target !== node) {
-                      return;
-                  }
-                  transitionEvents.removeEndEventListener(node, endListener);
-                  handle();
-              };
-              transitionEvents.addEndEventListener(node, endListener);
-            }
-        },
-
-        handleBackdropClick: function() {
-            if (this.props.closeOnClick) {
-                this.hide();
-            }
-        },
-
-        render: function() {
-
-            var hidden = this.hasHidden();
-            if (hidden) return null;
-
-            var willHidden = this.state.willHidden;
-            var animation = this.props.animation;
-            var modalStyle = animation.getModalStyle(willHidden);
-            var backdropStyle = animation.getBackdropStyle(willHidden);
-            var contentStyle = animation.getContentStyle(willHidden);
-            var ref = animation.getRef(willHidden);
-            var sharp = animation.getSharp && animation.getSharp(willHidden);
-
-            // Apply custom style properties
-            if (this.props.modalStyle) {
-                var prefixedModalStyle = appendVendorPrefix(this.props.modalStyle);
-                for (var style in prefixedModalStyle) {
-                    modalStyle[style] = prefixedModalStyle[style];
-                }
-            }
-
-            if (this.props.backdropStyle) {
-              var prefixedBackdropStyle = appendVendorPrefix(this.props.backdropStyle);
-                for (var style in prefixedBackdropStyle) {
-                    backdropStyle[style] = prefixedBackdropStyle[style];
-                }
-            }
-
-            if (this.props.contentStyle) {
-              var prefixedContentStyle = appendVendorPrefix(this.props.contentStyle);
-                for (var style in prefixedContentStyle) {
-                    contentStyle[style] = prefixedContentStyle[style];
-                }
-            }
-
-            var backdrop = this.props.backdrop? React.createElement("div", {style: backdropStyle, onClick: this.props.closeOnClick? this.handleBackdropClick: null}): undefined;
-
-            if(willHidden) {
-                var node = this.refs[ref];
-                this.addTransitionListener(node, this.leave);
-            }
-
-            return (React.createElement("span", null, 
-                React.createElement("div", {ref: "modal", style: modalStyle, className: this.props.className}, 
-                    sharp, 
-                    React.createElement("div", {ref: "content", tabIndex: "-1", style: contentStyle}, 
-                        this.props.children
-                    )
-                ), 
-                backdrop
-             ))
-            ;
-        },
-
-        leave: function(){
-            this.setState({
-                hidden: true
-            });
-            this.props.onHide();
-        },
-
-        enter: function(){
-            this.props.onShow();
-        },
-
-        show: function(){
-            if (!this.hasHidden()) return;
-
-            this.setState({
-                willHidden: false,
-                hidden: false
-            });
-
-            setTimeout(function(){
-              var ref = this.props.animation.getRef();
-              var node = this.refs[ref];
-              this.addTransitionListener(node, this.enter);
-            }.bind(this), 0);
-        },
-
-        hide: function(){
-            if (this.hasHidden()) return;
-
-            this.setState({
-                willHidden: true
-            });
-        },
-
-        toggle: function(){
-            if (this.hasHidden())
-                this.show();
-            else
-                this.hide();
-        },
-
-        listenKeyboard: function(event) {
-            if (this.props.keyboard &&
-                    (event.key === "Escape" ||
-                     event.keyCode === 27)) {
-                this.hide();
-            }
-        },
-
-        componentDidMount: function(){
-            window.addEventListener("keydown", this.listenKeyboard, true);
-        },
-
-        componentWillUnmount: function() {
-            window.removeEventListener("keydown", this.listenKeyboard, true);
-        }
-    });
-}
-
-},{"domkit/appendVendorPrefix":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\domkit\\appendVendorPrefix.js","domkit/transitionEvents":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\domkit\\transitionEvents.js","react":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\react\\react.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\classnames\\index.js":[function(require,module,exports){
+},{"./helpers/bind":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\axios\\lib\\helpers\\bind.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\classnames\\index.js":[function(require,module,exports){
 /*!
   Copyright (c) 2016 Jed Watson.
   Licensed under the MIT License (MIT), see
@@ -4162,247 +3580,6 @@ function shim (obj) {
   for (var key in obj) keys.push(key);
   return keys;
 }
-
-},{}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\domkit\\appendVendorPrefix.js":[function(require,module,exports){
-'use strict';
-
-var getVendorPropertyName = require('./getVendorPropertyName');
-
-module.exports = function(target, sources) {
-  var to = Object(target);
-  var hasOwnProperty = Object.prototype.hasOwnProperty;
-
-  for (var nextIndex = 1; nextIndex < arguments.length; nextIndex++) {
-    var nextSource = arguments[nextIndex];
-    if (nextSource == null) {
-      continue;
-    }
-
-    var from = Object(nextSource);
-
-    for (var key in from) {
-      if (hasOwnProperty.call(from, key)) {
-        to[key] = from[key];
-      }
-    }
-  }
-
-  var prefixed = {};
-  for (var key in to) {
-    prefixed[getVendorPropertyName(key)] = to[key]
-  }
-
-  return prefixed
-}
-
-},{"./getVendorPropertyName":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\domkit\\getVendorPropertyName.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\domkit\\builtinStyle.js":[function(require,module,exports){
-'use strict';
-
-module.exports = document.createElement('div').style;
-
-},{}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\domkit\\getVendorPrefix.js":[function(require,module,exports){
-'use strict';
-
-var cssVendorPrefix;
-
-module.exports = function() {
-
-  if (cssVendorPrefix) return cssVendorPrefix;
-
-  var styles = window.getComputedStyle(document.documentElement, '');
-  var pre = (Array.prototype.slice.call(styles).join('').match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o']))[1];
-
-  return cssVendorPrefix = '-' + pre + '-';
-}
-
-},{}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\domkit\\getVendorPropertyName.js":[function(require,module,exports){
-'use strict';
-
-var builtinStyle = require('./builtinStyle');
-var prefixes = ['Moz', 'Webkit', 'O', 'ms'];
-var domVendorPrefix;
-
-// Helper function to get the proper vendor property name. (transition => WebkitTransition)
-module.exports = function(prop, isSupportTest) {
-
-  var vendorProp;
-  if (prop in builtinStyle) return prop;
-
-  var UpperProp = prop.charAt(0).toUpperCase() + prop.substr(1);
-
-  if (domVendorPrefix) {
-
-    vendorProp = domVendorPrefix + UpperProp;
-    if (vendorProp in builtinStyle) {
-      return vendorProp;
-    }
-  } else {
-
-    for (var i = 0; i < prefixes.length; ++i) {
-      vendorProp = prefixes[i] + UpperProp;
-      if (vendorProp in builtinStyle) {
-        domVendorPrefix = prefixes[i];
-        return vendorProp;
-      }
-    }
-  }
-
-  // if support test, not fallback to origin prop name
-  if (!isSupportTest) {
-    return prop;
-  }
-
-}
-
-},{"./builtinStyle":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\domkit\\builtinStyle.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\domkit\\insertKeyframesRule.js":[function(require,module,exports){
-'use strict';
-
-var insertRule = require('./insertRule');
-var vendorPrefix = require('./getVendorPrefix')();
-var index = 0;
-
-module.exports = function(keyframes) {
-  // random name
-  var name = 'anim_' + (++index) + (+new Date);
-  var css = "@" + vendorPrefix + "keyframes " + name + " {";
-
-  for (var key in keyframes) {
-    css += key + " {";
-
-    for (var property in keyframes[key]) {
-      var part = ":" + keyframes[key][property] + ";";
-      // We do vendor prefix for every property
-      css += vendorPrefix + property + part;
-      css += property + part;
-    }
-
-    css += "}";
-  }
-
-  css += "}";
-
-  insertRule(css);
-
-  return name
-}
-
-},{"./getVendorPrefix":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\domkit\\getVendorPrefix.js","./insertRule":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\domkit\\insertRule.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\domkit\\insertRule.js":[function(require,module,exports){
-'use strict';
-
-var extraSheet;
-
-module.exports = function(css) {
-
-  if (!extraSheet) {
-    // First time, create an extra stylesheet for adding rules
-    extraSheet = document.createElement('style');
-    document.getElementsByTagName('head')[0].appendChild(extraSheet);
-    // Keep reference to actual StyleSheet object (`styleSheet` for IE < 9)
-    extraSheet = extraSheet.sheet || extraSheet.styleSheet;
-  }
-
-  var index = (extraSheet.cssRules || extraSheet.rules).length;
-  extraSheet.insertRule(css, index);
-
-  return extraSheet;
-}
-
-},{}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\domkit\\transitionEvents.js":[function(require,module,exports){
-'use strict';
-
-/**
- * EVENT_NAME_MAP is used to determine which event fired when a
- * transition/animation ends, based on the style property used to
- * define that event.
- */
-var EVENT_NAME_MAP = {
-  transitionend: {
-    'transition': 'transitionend',
-    'WebkitTransition': 'webkitTransitionEnd',
-    'MozTransition': 'mozTransitionEnd',
-    'OTransition': 'oTransitionEnd',
-    'msTransition': 'MSTransitionEnd'
-  },
-
-  animationend: {
-    'animation': 'animationend',
-    'WebkitAnimation': 'webkitAnimationEnd',
-    'MozAnimation': 'mozAnimationEnd',
-    'OAnimation': 'oAnimationEnd',
-    'msAnimation': 'MSAnimationEnd'
-  }
-};
-
-var endEvents = [];
-
-function detectEvents() {
-  var testEl = document.createElement('div');
-  var style = testEl.style;
-
-  // On some platforms, in particular some releases of Android 4.x,
-  // the un-prefixed "animation" and "transition" properties are defined on the
-  // style object but the events that fire will still be prefixed, so we need
-  // to check if the un-prefixed events are useable, and if not remove them
-  // from the map
-  if (!('AnimationEvent' in window)) {
-    delete EVENT_NAME_MAP.animationend.animation;
-  }
-
-  if (!('TransitionEvent' in window)) {
-    delete EVENT_NAME_MAP.transitionend.transition;
-  }
-
-  for (var baseEventName in EVENT_NAME_MAP) {
-    var baseEvents = EVENT_NAME_MAP[baseEventName];
-    for (var styleName in baseEvents) {
-      if (styleName in style) {
-        endEvents.push(baseEvents[styleName]);
-        break;
-      }
-    }
-  }
-}
-
-if (typeof window !== 'undefined') {
-  detectEvents();
-}
-
-
-// We use the raw {add|remove}EventListener() call because EventListener
-// does not know how to remove event listeners and we really should
-// clean up. Also, these events are not triggered in older browsers
-// so we should be A-OK here.
-
-function addEventListener(node, eventName, eventListener) {
-  node.addEventListener(eventName, eventListener, false);
-}
-
-function removeEventListener(node, eventName, eventListener) {
-  node.removeEventListener(eventName, eventListener, false);
-}
-
-module.exports = {
-  addEndEventListener: function(node, eventListener) {
-    if (endEvents.length === 0) {
-      // If CSS transitions are not supported, trigger an "end animation"
-      // event immediately.
-      window.setTimeout(eventListener, 0);
-      return;
-    }
-    endEvents.forEach(function(endEvent) {
-      addEventListener(node, endEvent, eventListener);
-    });
-  },
-
-  removeEndEventListener: function(node, eventListener) {
-    if (endEvents.length === 0) {
-      return;
-    }
-    endEvents.forEach(function(endEvent) {
-      removeEventListener(node, endEvent, eventListener);
-    });
-  }
-};
 
 },{}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\fbjs\\lib\\EventListener.js":[function(require,module,exports){
 (function (process){
@@ -50532,2348 +49709,7 @@ function symbolObservablePonyfill(root) {
 
 	return result;
 };
-},{}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\index.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _toDate = require('./lib/toDate');
-
-var _toDate2 = _interopRequireDefault(_toDate);
-
-var _toFloat = require('./lib/toFloat');
-
-var _toFloat2 = _interopRequireDefault(_toFloat);
-
-var _toInt = require('./lib/toInt');
-
-var _toInt2 = _interopRequireDefault(_toInt);
-
-var _toBoolean = require('./lib/toBoolean');
-
-var _toBoolean2 = _interopRequireDefault(_toBoolean);
-
-var _equals = require('./lib/equals');
-
-var _equals2 = _interopRequireDefault(_equals);
-
-var _contains = require('./lib/contains');
-
-var _contains2 = _interopRequireDefault(_contains);
-
-var _matches = require('./lib/matches');
-
-var _matches2 = _interopRequireDefault(_matches);
-
-var _isEmail = require('./lib/isEmail');
-
-var _isEmail2 = _interopRequireDefault(_isEmail);
-
-var _isURL = require('./lib/isURL');
-
-var _isURL2 = _interopRequireDefault(_isURL);
-
-var _isMACAddress = require('./lib/isMACAddress');
-
-var _isMACAddress2 = _interopRequireDefault(_isMACAddress);
-
-var _isIP = require('./lib/isIP');
-
-var _isIP2 = _interopRequireDefault(_isIP);
-
-var _isFQDN = require('./lib/isFQDN');
-
-var _isFQDN2 = _interopRequireDefault(_isFQDN);
-
-var _isBoolean = require('./lib/isBoolean');
-
-var _isBoolean2 = _interopRequireDefault(_isBoolean);
-
-var _isAlpha = require('./lib/isAlpha');
-
-var _isAlpha2 = _interopRequireDefault(_isAlpha);
-
-var _isAlphanumeric = require('./lib/isAlphanumeric');
-
-var _isAlphanumeric2 = _interopRequireDefault(_isAlphanumeric);
-
-var _isNumeric = require('./lib/isNumeric');
-
-var _isNumeric2 = _interopRequireDefault(_isNumeric);
-
-var _isLowercase = require('./lib/isLowercase');
-
-var _isLowercase2 = _interopRequireDefault(_isLowercase);
-
-var _isUppercase = require('./lib/isUppercase');
-
-var _isUppercase2 = _interopRequireDefault(_isUppercase);
-
-var _isAscii = require('./lib/isAscii');
-
-var _isAscii2 = _interopRequireDefault(_isAscii);
-
-var _isFullWidth = require('./lib/isFullWidth');
-
-var _isFullWidth2 = _interopRequireDefault(_isFullWidth);
-
-var _isHalfWidth = require('./lib/isHalfWidth');
-
-var _isHalfWidth2 = _interopRequireDefault(_isHalfWidth);
-
-var _isVariableWidth = require('./lib/isVariableWidth');
-
-var _isVariableWidth2 = _interopRequireDefault(_isVariableWidth);
-
-var _isMultibyte = require('./lib/isMultibyte');
-
-var _isMultibyte2 = _interopRequireDefault(_isMultibyte);
-
-var _isSurrogatePair = require('./lib/isSurrogatePair');
-
-var _isSurrogatePair2 = _interopRequireDefault(_isSurrogatePair);
-
-var _isInt = require('./lib/isInt');
-
-var _isInt2 = _interopRequireDefault(_isInt);
-
-var _isFloat = require('./lib/isFloat');
-
-var _isFloat2 = _interopRequireDefault(_isFloat);
-
-var _isDecimal = require('./lib/isDecimal');
-
-var _isDecimal2 = _interopRequireDefault(_isDecimal);
-
-var _isHexadecimal = require('./lib/isHexadecimal');
-
-var _isHexadecimal2 = _interopRequireDefault(_isHexadecimal);
-
-var _isDivisibleBy = require('./lib/isDivisibleBy');
-
-var _isDivisibleBy2 = _interopRequireDefault(_isDivisibleBy);
-
-var _isHexColor = require('./lib/isHexColor');
-
-var _isHexColor2 = _interopRequireDefault(_isHexColor);
-
-var _isMD = require('./lib/isMD5');
-
-var _isMD2 = _interopRequireDefault(_isMD);
-
-var _isJSON = require('./lib/isJSON');
-
-var _isJSON2 = _interopRequireDefault(_isJSON);
-
-var _isNull = require('./lib/isNull');
-
-var _isNull2 = _interopRequireDefault(_isNull);
-
-var _isLength = require('./lib/isLength');
-
-var _isLength2 = _interopRequireDefault(_isLength);
-
-var _isByteLength = require('./lib/isByteLength');
-
-var _isByteLength2 = _interopRequireDefault(_isByteLength);
-
-var _isUUID = require('./lib/isUUID');
-
-var _isUUID2 = _interopRequireDefault(_isUUID);
-
-var _isMongoId = require('./lib/isMongoId');
-
-var _isMongoId2 = _interopRequireDefault(_isMongoId);
-
-var _isDate = require('./lib/isDate');
-
-var _isDate2 = _interopRequireDefault(_isDate);
-
-var _isAfter = require('./lib/isAfter');
-
-var _isAfter2 = _interopRequireDefault(_isAfter);
-
-var _isBefore = require('./lib/isBefore');
-
-var _isBefore2 = _interopRequireDefault(_isBefore);
-
-var _isIn = require('./lib/isIn');
-
-var _isIn2 = _interopRequireDefault(_isIn);
-
-var _isCreditCard = require('./lib/isCreditCard');
-
-var _isCreditCard2 = _interopRequireDefault(_isCreditCard);
-
-var _isISIN = require('./lib/isISIN');
-
-var _isISIN2 = _interopRequireDefault(_isISIN);
-
-var _isISBN = require('./lib/isISBN');
-
-var _isISBN2 = _interopRequireDefault(_isISBN);
-
-var _isMobilePhone = require('./lib/isMobilePhone');
-
-var _isMobilePhone2 = _interopRequireDefault(_isMobilePhone);
-
-var _isCurrency = require('./lib/isCurrency');
-
-var _isCurrency2 = _interopRequireDefault(_isCurrency);
-
-var _isISO = require('./lib/isISO8601');
-
-var _isISO2 = _interopRequireDefault(_isISO);
-
-var _isBase = require('./lib/isBase64');
-
-var _isBase2 = _interopRequireDefault(_isBase);
-
-var _isDataURI = require('./lib/isDataURI');
-
-var _isDataURI2 = _interopRequireDefault(_isDataURI);
-
-var _ltrim = require('./lib/ltrim');
-
-var _ltrim2 = _interopRequireDefault(_ltrim);
-
-var _rtrim = require('./lib/rtrim');
-
-var _rtrim2 = _interopRequireDefault(_rtrim);
-
-var _trim = require('./lib/trim');
-
-var _trim2 = _interopRequireDefault(_trim);
-
-var _escape = require('./lib/escape');
-
-var _escape2 = _interopRequireDefault(_escape);
-
-var _unescape = require('./lib/unescape');
-
-var _unescape2 = _interopRequireDefault(_unescape);
-
-var _stripLow = require('./lib/stripLow');
-
-var _stripLow2 = _interopRequireDefault(_stripLow);
-
-var _whitelist = require('./lib/whitelist');
-
-var _whitelist2 = _interopRequireDefault(_whitelist);
-
-var _blacklist = require('./lib/blacklist');
-
-var _blacklist2 = _interopRequireDefault(_blacklist);
-
-var _isWhitelisted = require('./lib/isWhitelisted');
-
-var _isWhitelisted2 = _interopRequireDefault(_isWhitelisted);
-
-var _normalizeEmail = require('./lib/normalizeEmail');
-
-var _normalizeEmail2 = _interopRequireDefault(_normalizeEmail);
-
-var _toString = require('./lib/util/toString');
-
-var _toString2 = _interopRequireDefault(_toString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var version = '5.7.0';
-
-var validator = {
-  version: version,
-  toDate: _toDate2.default,
-  toFloat: _toFloat2.default, toInt: _toInt2.default,
-  toBoolean: _toBoolean2.default,
-  equals: _equals2.default, contains: _contains2.default, matches: _matches2.default,
-  isEmail: _isEmail2.default, isURL: _isURL2.default, isMACAddress: _isMACAddress2.default, isIP: _isIP2.default, isFQDN: _isFQDN2.default,
-  isBoolean: _isBoolean2.default,
-  isAlpha: _isAlpha2.default, isAlphanumeric: _isAlphanumeric2.default, isNumeric: _isNumeric2.default, isLowercase: _isLowercase2.default, isUppercase: _isUppercase2.default,
-  isAscii: _isAscii2.default, isFullWidth: _isFullWidth2.default, isHalfWidth: _isHalfWidth2.default, isVariableWidth: _isVariableWidth2.default,
-  isMultibyte: _isMultibyte2.default, isSurrogatePair: _isSurrogatePair2.default,
-  isInt: _isInt2.default, isFloat: _isFloat2.default, isDecimal: _isDecimal2.default, isHexadecimal: _isHexadecimal2.default, isDivisibleBy: _isDivisibleBy2.default,
-  isHexColor: _isHexColor2.default,
-  isMD5: _isMD2.default,
-  isJSON: _isJSON2.default,
-  isNull: _isNull2.default,
-  isLength: _isLength2.default, isByteLength: _isByteLength2.default,
-  isUUID: _isUUID2.default, isMongoId: _isMongoId2.default,
-  isDate: _isDate2.default, isAfter: _isAfter2.default, isBefore: _isBefore2.default,
-  isIn: _isIn2.default,
-  isCreditCard: _isCreditCard2.default,
-  isISIN: _isISIN2.default, isISBN: _isISBN2.default,
-  isMobilePhone: _isMobilePhone2.default,
-  isCurrency: _isCurrency2.default,
-  isISO8601: _isISO2.default,
-  isBase64: _isBase2.default, isDataURI: _isDataURI2.default,
-  ltrim: _ltrim2.default, rtrim: _rtrim2.default, trim: _trim2.default,
-  escape: _escape2.default, unescape: _unescape2.default, stripLow: _stripLow2.default,
-  whitelist: _whitelist2.default, blacklist: _blacklist2.default,
-  isWhitelisted: _isWhitelisted2.default,
-  normalizeEmail: _normalizeEmail2.default,
-  toString: _toString2.default
-};
-
-exports.default = validator;
-module.exports = exports['default'];
-},{"./lib/blacklist":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\blacklist.js","./lib/contains":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\contains.js","./lib/equals":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\equals.js","./lib/escape":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\escape.js","./lib/isAfter":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isAfter.js","./lib/isAlpha":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isAlpha.js","./lib/isAlphanumeric":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isAlphanumeric.js","./lib/isAscii":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isAscii.js","./lib/isBase64":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isBase64.js","./lib/isBefore":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isBefore.js","./lib/isBoolean":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isBoolean.js","./lib/isByteLength":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isByteLength.js","./lib/isCreditCard":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isCreditCard.js","./lib/isCurrency":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isCurrency.js","./lib/isDataURI":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isDataURI.js","./lib/isDate":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isDate.js","./lib/isDecimal":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isDecimal.js","./lib/isDivisibleBy":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isDivisibleBy.js","./lib/isEmail":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isEmail.js","./lib/isFQDN":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isFQDN.js","./lib/isFloat":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isFloat.js","./lib/isFullWidth":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isFullWidth.js","./lib/isHalfWidth":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isHalfWidth.js","./lib/isHexColor":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isHexColor.js","./lib/isHexadecimal":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isHexadecimal.js","./lib/isIP":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isIP.js","./lib/isISBN":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isISBN.js","./lib/isISIN":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isISIN.js","./lib/isISO8601":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isISO8601.js","./lib/isIn":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isIn.js","./lib/isInt":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isInt.js","./lib/isJSON":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isJSON.js","./lib/isLength":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isLength.js","./lib/isLowercase":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isLowercase.js","./lib/isMACAddress":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isMACAddress.js","./lib/isMD5":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isMD5.js","./lib/isMobilePhone":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isMobilePhone.js","./lib/isMongoId":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isMongoId.js","./lib/isMultibyte":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isMultibyte.js","./lib/isNull":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isNull.js","./lib/isNumeric":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isNumeric.js","./lib/isSurrogatePair":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isSurrogatePair.js","./lib/isURL":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isURL.js","./lib/isUUID":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isUUID.js","./lib/isUppercase":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isUppercase.js","./lib/isVariableWidth":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isVariableWidth.js","./lib/isWhitelisted":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isWhitelisted.js","./lib/ltrim":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\ltrim.js","./lib/matches":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\matches.js","./lib/normalizeEmail":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\normalizeEmail.js","./lib/rtrim":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\rtrim.js","./lib/stripLow":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\stripLow.js","./lib/toBoolean":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\toBoolean.js","./lib/toDate":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\toDate.js","./lib/toFloat":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\toFloat.js","./lib/toInt":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\toInt.js","./lib/trim":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\trim.js","./lib/unescape":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\unescape.js","./lib/util/toString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\toString.js","./lib/whitelist":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\whitelist.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\alpha.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var alpha = exports.alpha = {
-  'en-US': /^[A-Z]+$/i,
-  'cs-CZ': /^[A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]+$/i,
-  'de-DE': /^[A-ZÄÖÜß]+$/i,
-  'es-ES': /^[A-ZÁÉÍÑÓÚÜ]+$/i,
-  'fr-FR': /^[A-ZÀÂÆÇÉÈÊËÏÎÔŒÙÛÜŸ]+$/i,
-  'nl-NL': /^[A-ZÉËÏÓÖÜ]+$/i,
-  'hu-HU': /^[A-ZÁÉÍÓÖŐÚÜŰ]+$/i,
-  'pl-PL': /^[A-ZĄĆĘŚŁŃÓŻŹ]+$/i,
-  'pt-PT': /^[A-ZÃÁÀÂÇÉÊÍÕÓÔÚÜ]+$/i,
-  'ru-RU': /^[А-ЯЁ]+$/i,
-  'sr-RS@latin': /^[A-ZČĆŽŠĐ]+$/i,
-  'sr-RS': /^[А-ЯЂЈЉЊЋЏ]+$/i,
-  'tr-TR': /^[A-ZÇĞİıÖŞÜ]+$/i,
-  ar: /^[ءآأؤإئابةتثجحخدذرزسشصضطظعغفقكلمنهوىيًٌٍَُِّْٰ]+$/
-};
-
-var alphanumeric = exports.alphanumeric = {
-  'en-US': /^[0-9A-Z]+$/i,
-  'cs-CZ': /^[0-9A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]+$/i,
-  'de-DE': /^[0-9A-ZÄÖÜß]+$/i,
-  'es-ES': /^[0-9A-ZÁÉÍÑÓÚÜ]+$/i,
-  'fr-FR': /^[0-9A-ZÀÂÆÇÉÈÊËÏÎÔŒÙÛÜŸ]+$/i,
-  'hu-HU': /^[0-9A-ZÁÉÍÓÖŐÚÜŰ]+$/i,
-  'nl-NL': /^[0-9A-ZÉËÏÓÖÜ]+$/i,
-  'pl-PL': /^[0-9A-ZĄĆĘŚŁŃÓŻŹ]+$/i,
-  'pt-PT': /^[0-9A-ZÃÁÀÂÇÉÊÍÕÓÔÚÜ]+$/i,
-  'ru-RU': /^[0-9А-ЯЁ]+$/i,
-  'sr-RS@latin': /^[0-9A-ZČĆŽŠĐ]+$/i,
-  'sr-RS': /^[0-9А-ЯЂЈЉЊЋЏ]+$/i,
-  'tr-TR': /^[0-9A-ZÇĞİıÖŞÜ]+$/i,
-  ar: /^[٠١٢٣٤٥٦٧٨٩0-9ءآأؤإئابةتثجحخدذرزسشصضطظعغفقكلمنهوىيًٌٍَُِّْٰ]+$/
-};
-
-var englishLocales = exports.englishLocales = ['AU', 'GB', 'HK', 'IN', 'NZ', 'ZA', 'ZM'];
-
-for (var locale, i = 0; i < englishLocales.length; i++) {
-  locale = 'en-' + englishLocales[i];
-  alpha[locale] = alpha['en-US'];
-  alphanumeric[locale] = alphanumeric['en-US'];
-}
-
-alpha['pt-BR'] = alpha['pt-PT'];
-alphanumeric['pt-BR'] = alphanumeric['pt-PT'];
-
-// Source: http://www.localeplanet.com/java/
-var arabicLocales = exports.arabicLocales = ['AE', 'BH', 'DZ', 'EG', 'IQ', 'JO', 'KW', 'LB', 'LY', 'MA', 'QM', 'QA', 'SA', 'SD', 'SY', 'TN', 'YE'];
-
-for (var _locale, _i = 0; _i < arabicLocales.length; _i++) {
-  _locale = 'ar-' + arabicLocales[_i];
-  alpha[_locale] = alpha.ar;
-  alphanumeric[_locale] = alphanumeric.ar;
-}
-},{}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\blacklist.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = blacklist;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function blacklist(str, chars) {
-  (0, _assertString2.default)(str);
-  return str.replace(new RegExp('[' + chars + ']+', 'g'), '');
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\contains.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = contains;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-var _toString = require('./util/toString');
-
-var _toString2 = _interopRequireDefault(_toString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function contains(str, elem) {
-  (0, _assertString2.default)(str);
-  return str.indexOf((0, _toString2.default)(elem)) >= 0;
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js","./util/toString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\toString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\equals.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = equals;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function equals(str, comparison) {
-  (0, _assertString2.default)(str);
-  return str === comparison;
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\escape.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-      value: true
-});
-exports.default = escape;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function escape(str) {
-      (0, _assertString2.default)(str);
-      return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\//g, '&#x2F;').replace(/`/g, '&#96;');
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isAfter.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isAfter;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-var _toDate = require('./toDate');
-
-var _toDate2 = _interopRequireDefault(_toDate);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function isAfter(str) {
-  var date = arguments.length <= 1 || arguments[1] === undefined ? String(new Date()) : arguments[1];
-
-  (0, _assertString2.default)(str);
-  var comparison = (0, _toDate2.default)(date);
-  var original = (0, _toDate2.default)(str);
-  return !!(original && comparison && original > comparison);
-}
-module.exports = exports['default'];
-},{"./toDate":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\toDate.js","./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isAlpha.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isAlpha;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-var _alpha = require('./alpha');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function isAlpha(str) {
-  var locale = arguments.length <= 1 || arguments[1] === undefined ? 'en-US' : arguments[1];
-
-  (0, _assertString2.default)(str);
-  if (locale in _alpha.alpha) {
-    return _alpha.alpha[locale].test(str);
-  }
-  throw new Error('Invalid locale \'' + locale + '\'');
-}
-module.exports = exports['default'];
-},{"./alpha":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\alpha.js","./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isAlphanumeric.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isAlphanumeric;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-var _alpha = require('./alpha');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function isAlphanumeric(str) {
-  var locale = arguments.length <= 1 || arguments[1] === undefined ? 'en-US' : arguments[1];
-
-  (0, _assertString2.default)(str);
-  if (locale in _alpha.alphanumeric) {
-    return _alpha.alphanumeric[locale].test(str);
-  }
-  throw new Error('Invalid locale \'' + locale + '\'');
-}
-module.exports = exports['default'];
-},{"./alpha":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\alpha.js","./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isAscii.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isAscii;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/* eslint-disable no-control-regex */
-var ascii = /^[\x00-\x7F]+$/;
-/* eslint-enable no-control-regex */
-
-function isAscii(str) {
-  (0, _assertString2.default)(str);
-  return ascii.test(str);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isBase64.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isBase64;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var notBase64 = /[^A-Z0-9+\/=]/i;
-
-function isBase64(str) {
-  (0, _assertString2.default)(str);
-  var len = str.length;
-  if (!len || len % 4 !== 0 || notBase64.test(str)) {
-    return false;
-  }
-  var firstPaddingChar = str.indexOf('=');
-  return firstPaddingChar === -1 || firstPaddingChar === len - 1 || firstPaddingChar === len - 2 && str[len - 1] === '=';
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isBefore.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isBefore;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-var _toDate = require('./toDate');
-
-var _toDate2 = _interopRequireDefault(_toDate);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function isBefore(str) {
-  var date = arguments.length <= 1 || arguments[1] === undefined ? String(new Date()) : arguments[1];
-
-  (0, _assertString2.default)(str);
-  var comparison = (0, _toDate2.default)(date);
-  var original = (0, _toDate2.default)(str);
-  return !!(original && comparison && original < comparison);
-}
-module.exports = exports['default'];
-},{"./toDate":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\toDate.js","./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isBoolean.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isBoolean;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function isBoolean(str) {
-  (0, _assertString2.default)(str);
-  return ['true', 'false', '1', '0'].indexOf(str) >= 0;
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isByteLength.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-exports.default = isByteLength;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/* eslint-disable prefer-rest-params */
-function isByteLength(str, options) {
-  (0, _assertString2.default)(str);
-  var min = void 0;
-  var max = void 0;
-  if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) === 'object') {
-    min = options.min || 0;
-    max = options.max;
-  } else {
-    // backwards compatibility: isByteLength(str, min [, max])
-    min = arguments[1];
-    max = arguments[2];
-  }
-  var len = encodeURI(str).split(/%..|./).length - 1;
-  return len >= min && (typeof max === 'undefined' || len <= max);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isCreditCard.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isCreditCard;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/* eslint-disable max-len */
-var creditCard = /^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|(222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)[0-9]{12}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})|62[0-9]{14}$/;
-/* eslint-enable max-len */
-
-function isCreditCard(str) {
-  (0, _assertString2.default)(str);
-  var sanitized = str.replace(/[^0-9]+/g, '');
-  if (!creditCard.test(sanitized)) {
-    return false;
-  }
-  var sum = 0;
-  var digit = void 0;
-  var tmpNum = void 0;
-  var shouldDouble = void 0;
-  for (var i = sanitized.length - 1; i >= 0; i--) {
-    digit = sanitized.substring(i, i + 1);
-    tmpNum = parseInt(digit, 10);
-    if (shouldDouble) {
-      tmpNum *= 2;
-      if (tmpNum >= 10) {
-        sum += tmpNum % 10 + 1;
-      } else {
-        sum += tmpNum;
-      }
-    } else {
-      sum += tmpNum;
-    }
-    shouldDouble = !shouldDouble;
-  }
-  return !!(sum % 10 === 0 ? sanitized : false);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isCurrency.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isCurrency;
-
-var _merge = require('./util/merge');
-
-var _merge2 = _interopRequireDefault(_merge);
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function currencyRegex(options) {
-  var symbol = '(\\' + options.symbol.replace(/\./g, '\\.') + ')' + (options.require_symbol ? '' : '?'),
-      negative = '-?',
-      whole_dollar_amount_without_sep = '[1-9]\\d*',
-      whole_dollar_amount_with_sep = '[1-9]\\d{0,2}(\\' + options.thousands_separator + '\\d{3})*',
-      valid_whole_dollar_amounts = ['0', whole_dollar_amount_without_sep, whole_dollar_amount_with_sep],
-      whole_dollar_amount = '(' + valid_whole_dollar_amounts.join('|') + ')?',
-      decimal_amount = '(\\' + options.decimal_separator + '\\d{2})?';
-  var pattern = whole_dollar_amount + decimal_amount;
-
-  // default is negative sign before symbol, but there are two other options (besides parens)
-  if (options.allow_negatives && !options.parens_for_negatives) {
-    if (options.negative_sign_after_digits) {
-      pattern += negative;
-    } else if (options.negative_sign_before_digits) {
-      pattern = negative + pattern;
-    }
-  }
-
-  // South African Rand, for example, uses R 123 (space) and R-123 (no space)
-  if (options.allow_negative_sign_placeholder) {
-    pattern = '( (?!\\-))?' + pattern;
-  } else if (options.allow_space_after_symbol) {
-    pattern = ' ?' + pattern;
-  } else if (options.allow_space_after_digits) {
-    pattern += '( (?!$))?';
-  }
-
-  if (options.symbol_after_digits) {
-    pattern += symbol;
-  } else {
-    pattern = symbol + pattern;
-  }
-
-  if (options.allow_negatives) {
-    if (options.parens_for_negatives) {
-      pattern = '(\\(' + pattern + '\\)|' + pattern + ')';
-    } else if (!(options.negative_sign_before_digits || options.negative_sign_after_digits)) {
-      pattern = negative + pattern;
-    }
-  }
-
-  /* eslint-disable prefer-template */
-  return new RegExp('^' +
-  // ensure there's a dollar and/or decimal amount, and that
-  // it doesn't start with a space or a negative sign followed by a space
-  '(?!-? )(?=.*\\d)' + pattern + '$');
-  /* eslint-enable prefer-template */
-}
-
-var default_currency_options = {
-  symbol: '$',
-  require_symbol: false,
-  allow_space_after_symbol: false,
-  symbol_after_digits: false,
-  allow_negatives: true,
-  parens_for_negatives: false,
-  negative_sign_before_digits: false,
-  negative_sign_after_digits: false,
-  allow_negative_sign_placeholder: false,
-  thousands_separator: ',',
-  decimal_separator: '.',
-  allow_space_after_digits: false
-};
-
-function isCurrency(str, options) {
-  (0, _assertString2.default)(str);
-  options = (0, _merge2.default)(options, default_currency_options);
-  return currencyRegex(options).test(str);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js","./util/merge":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\merge.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isDataURI.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isDataURI;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var dataURI = /^\s*data:([a-z]+\/[a-z0-9\-\+]+(;[a-z\-]+=[a-z0-9\-]+)?)?(;base64)?,[a-z0-9!\$&',\(\)\*\+,;=\-\._~:@\/\?%\s]*\s*$/i; // eslint-disable-line max-len
-
-function isDataURI(str) {
-  (0, _assertString2.default)(str);
-  return dataURI.test(str);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isDate.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isDate;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-var _isISO = require('./isISO8601');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function getTimezoneOffset(str) {
-  var iso8601Parts = str.match(_isISO.iso8601);
-  var timezone = void 0,
-      sign = void 0,
-      hours = void 0,
-      minutes = void 0;
-  if (!iso8601Parts) {
-    str = str.toLowerCase();
-    timezone = str.match(/(?:\s|gmt\s*)(-|\+)(\d{1,4})(\s|$)/);
-    if (!timezone) {
-      return str.indexOf('gmt') !== -1 ? 0 : null;
-    }
-    sign = timezone[1];
-    var offset = timezone[2];
-    if (offset.length === 3) {
-      offset = '0' + offset;
-    }
-    if (offset.length <= 2) {
-      hours = 0;
-      minutes = parseInt(offset, 10);
-    } else {
-      hours = parseInt(offset.slice(0, 2), 10);
-      minutes = parseInt(offset.slice(2, 4), 10);
-    }
-  } else {
-    timezone = iso8601Parts[21];
-    if (!timezone) {
-      // if no hour/minute was provided, the date is GMT
-      return !iso8601Parts[12] ? 0 : null;
-    }
-    if (timezone === 'z' || timezone === 'Z') {
-      return 0;
-    }
-    sign = iso8601Parts[22];
-    if (timezone.indexOf(':') !== -1) {
-      hours = parseInt(iso8601Parts[23], 10);
-      minutes = parseInt(iso8601Parts[24], 10);
-    } else {
-      hours = 0;
-      minutes = parseInt(iso8601Parts[23], 10);
-    }
-  }
-  return (hours * 60 + minutes) * (sign === '-' ? 1 : -1);
-}
-
-function isDate(str) {
-  (0, _assertString2.default)(str);
-  var normalizedDate = new Date(Date.parse(str));
-  if (isNaN(normalizedDate)) {
-    return false;
-  }
-
-  // normalizedDate is in the user's timezone. Apply the input
-  // timezone offset to the date so that the year and day match
-  // the input
-  var timezoneOffset = getTimezoneOffset(str);
-  if (timezoneOffset !== null) {
-    var timezoneDifference = normalizedDate.getTimezoneOffset() - timezoneOffset;
-    normalizedDate = new Date(normalizedDate.getTime() + 60000 * timezoneDifference);
-  }
-
-  var day = String(normalizedDate.getDate());
-  var dayOrYear = void 0,
-      dayOrYearMatches = void 0,
-      year = void 0;
-  // check for valid double digits that could be late days
-  // check for all matches since a string like '12/23' is a valid date
-  // ignore everything with nearby colons
-  dayOrYearMatches = str.match(/(^|[^:\d])[23]\d([^T:\d]|$)/g);
-  if (!dayOrYearMatches) {
-    return true;
-  }
-  dayOrYear = dayOrYearMatches.map(function (digitString) {
-    return digitString.match(/\d+/g)[0];
-  }).join('/');
-
-  year = String(normalizedDate.getFullYear()).slice(-2);
-  if (dayOrYear === day || dayOrYear === year) {
-    return true;
-  } else if (dayOrYear === '' + day / year || dayOrYear === '' + year / day) {
-    return true;
-  }
-  return false;
-}
-module.exports = exports['default'];
-},{"./isISO8601":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isISO8601.js","./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isDecimal.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isDecimal;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var decimal = /^[-+]?([0-9]+|\.[0-9]+|[0-9]+\.[0-9]+)$/;
-
-function isDecimal(str) {
-  (0, _assertString2.default)(str);
-  return str !== '' && decimal.test(str);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isDivisibleBy.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isDivisibleBy;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-var _toFloat = require('./toFloat');
-
-var _toFloat2 = _interopRequireDefault(_toFloat);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function isDivisibleBy(str, num) {
-  (0, _assertString2.default)(str);
-  return (0, _toFloat2.default)(str) % parseInt(num, 10) === 0;
-}
-module.exports = exports['default'];
-},{"./toFloat":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\toFloat.js","./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isEmail.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isEmail;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-var _merge = require('./util/merge');
-
-var _merge2 = _interopRequireDefault(_merge);
-
-var _isByteLength = require('./isByteLength');
-
-var _isByteLength2 = _interopRequireDefault(_isByteLength);
-
-var _isFQDN = require('./isFQDN');
-
-var _isFQDN2 = _interopRequireDefault(_isFQDN);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var default_email_options = {
-  allow_display_name: false,
-  allow_utf8_local_part: true,
-  require_tld: true
-};
-
-/* eslint-disable max-len */
-/* eslint-disable no-control-regex */
-var displayName = /^[a-z\d!#\$%&'\*\+\-\/=\?\^_`{\|}~\.\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+[a-z\d!#\$%&'\*\+\-\/=\?\^_`{\|}~\.\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF\s]*<(.+)>$/i;
-var emailUserPart = /^[a-z\d!#\$%&'\*\+\-\/=\?\^_`{\|}~]+$/i;
-var quotedEmailUser = /^([\s\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e]|(\\[\x01-\x09\x0b\x0c\x0d-\x7f]))*$/i;
-var emailUserUtf8Part = /^[a-z\d!#\$%&'\*\+\-\/=\?\^_`{\|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+$/i;
-var quotedEmailUserUtf8 = /^([\s\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|(\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*$/i;
-/* eslint-enable max-len */
-/* eslint-enable no-control-regex */
-
-function isEmail(str, options) {
-  (0, _assertString2.default)(str);
-  options = (0, _merge2.default)(options, default_email_options);
-
-  if (options.allow_display_name) {
-    var display_email = str.match(displayName);
-    if (display_email) {
-      str = display_email[1];
-    }
-  }
-
-  var parts = str.split('@');
-  var domain = parts.pop();
-  var user = parts.join('@');
-
-  var lower_domain = domain.toLowerCase();
-  if (lower_domain === 'gmail.com' || lower_domain === 'googlemail.com') {
-    user = user.replace(/\./g, '').toLowerCase();
-  }
-
-  if (!(0, _isByteLength2.default)(user, { max: 64 }) || !(0, _isByteLength2.default)(domain, { max: 256 })) {
-    return false;
-  }
-
-  if (!(0, _isFQDN2.default)(domain, { require_tld: options.require_tld })) {
-    return false;
-  }
-
-  if (user[0] === '"') {
-    user = user.slice(1, user.length - 1);
-    return options.allow_utf8_local_part ? quotedEmailUserUtf8.test(user) : quotedEmailUser.test(user);
-  }
-
-  var pattern = options.allow_utf8_local_part ? emailUserUtf8Part : emailUserPart;
-
-  var user_parts = user.split('.');
-  for (var i = 0; i < user_parts.length; i++) {
-    if (!pattern.test(user_parts[i])) {
-      return false;
-    }
-  }
-
-  return true;
-}
-module.exports = exports['default'];
-},{"./isByteLength":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isByteLength.js","./isFQDN":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isFQDN.js","./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js","./util/merge":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\merge.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isFQDN.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isFDQN;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-var _merge = require('./util/merge');
-
-var _merge2 = _interopRequireDefault(_merge);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var default_fqdn_options = {
-  require_tld: true,
-  allow_underscores: false,
-  allow_trailing_dot: false
-};
-
-function isFDQN(str, options) {
-  (0, _assertString2.default)(str);
-  options = (0, _merge2.default)(options, default_fqdn_options);
-
-  /* Remove the optional trailing dot before checking validity */
-  if (options.allow_trailing_dot && str[str.length - 1] === '.') {
-    str = str.substring(0, str.length - 1);
-  }
-  var parts = str.split('.');
-  if (options.require_tld) {
-    var tld = parts.pop();
-    if (!parts.length || !/^([a-z\u00a1-\uffff]{2,}|xn[a-z0-9-]{2,})$/i.test(tld)) {
-      return false;
-    }
-  }
-  for (var part, i = 0; i < parts.length; i++) {
-    part = parts[i];
-    if (options.allow_underscores) {
-      part = part.replace(/_/g, '');
-    }
-    if (!/^[a-z\u00a1-\uffff0-9-]+$/i.test(part)) {
-      return false;
-    }
-    if (/[\uff01-\uff5e]/.test(part)) {
-      // disallow full-width chars
-      return false;
-    }
-    if (part[0] === '-' || part[part.length - 1] === '-') {
-      return false;
-    }
-  }
-  return true;
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js","./util/merge":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\merge.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isFloat.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isFloat;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var float = /^(?:[-+]?(?:[0-9]+))?(?:\.[0-9]*)?(?:[eE][\+\-]?(?:[0-9]+))?$/;
-
-function isFloat(str, options) {
-  (0, _assertString2.default)(str);
-  options = options || {};
-  if (str === '' || str === '.') {
-    return false;
-  }
-  return float.test(str) && (!options.hasOwnProperty('min') || str >= options.min) && (!options.hasOwnProperty('max') || str <= options.max);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isFullWidth.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.fullWidth = undefined;
-exports.default = isFullWidth;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var fullWidth = exports.fullWidth = /[^\u0020-\u007E\uFF61-\uFF9F\uFFA0-\uFFDC\uFFE8-\uFFEE0-9a-zA-Z]/;
-
-function isFullWidth(str) {
-  (0, _assertString2.default)(str);
-  return fullWidth.test(str);
-}
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isHalfWidth.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.halfWidth = undefined;
-exports.default = isHalfWidth;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var halfWidth = exports.halfWidth = /[\u0020-\u007E\uFF61-\uFF9F\uFFA0-\uFFDC\uFFE8-\uFFEE0-9a-zA-Z]/;
-
-function isHalfWidth(str) {
-  (0, _assertString2.default)(str);
-  return halfWidth.test(str);
-}
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isHexColor.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isHexColor;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var hexcolor = /^#?([0-9A-F]{3}|[0-9A-F]{6})$/i;
-
-function isHexColor(str) {
-  (0, _assertString2.default)(str);
-  return hexcolor.test(str);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isHexadecimal.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isHexadecimal;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var hexadecimal = /^[0-9A-F]+$/i;
-
-function isHexadecimal(str) {
-  (0, _assertString2.default)(str);
-  return hexadecimal.test(str);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isIP.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isIP;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var ipv4Maybe = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
-var ipv6Block = /^[0-9A-F]{1,4}$/i;
-
-function isIP(str) {
-  var version = arguments.length <= 1 || arguments[1] === undefined ? '' : arguments[1];
-
-  (0, _assertString2.default)(str);
-  version = String(version);
-  if (!version) {
-    return isIP(str, 4) || isIP(str, 6);
-  } else if (version === '4') {
-    if (!ipv4Maybe.test(str)) {
-      return false;
-    }
-    var parts = str.split('.').sort(function (a, b) {
-      return a - b;
-    });
-    return parts[3] <= 255;
-  } else if (version === '6') {
-    var blocks = str.split(':');
-    var foundOmissionBlock = false; // marker to indicate ::
-
-    // At least some OS accept the last 32 bits of an IPv6 address
-    // (i.e. 2 of the blocks) in IPv4 notation, and RFC 3493 says
-    // that '::ffff:a.b.c.d' is valid for IPv4-mapped IPv6 addresses,
-    // and '::a.b.c.d' is deprecated, but also valid.
-    var foundIPv4TransitionBlock = isIP(blocks[blocks.length - 1], 4);
-    var expectedNumberOfBlocks = foundIPv4TransitionBlock ? 7 : 8;
-
-    if (blocks.length > expectedNumberOfBlocks) {
-      return false;
-    }
-    // initial or final ::
-    if (str === '::') {
-      return true;
-    } else if (str.substr(0, 2) === '::') {
-      blocks.shift();
-      blocks.shift();
-      foundOmissionBlock = true;
-    } else if (str.substr(str.length - 2) === '::') {
-      blocks.pop();
-      blocks.pop();
-      foundOmissionBlock = true;
-    }
-
-    for (var i = 0; i < blocks.length; ++i) {
-      // test for a :: which can not be at the string start/end
-      // since those cases have been handled above
-      if (blocks[i] === '' && i > 0 && i < blocks.length - 1) {
-        if (foundOmissionBlock) {
-          return false; // multiple :: in address
-        }
-        foundOmissionBlock = true;
-      } else if (foundIPv4TransitionBlock && i === blocks.length - 1) {
-        // it has been checked before that the last
-        // block is a valid IPv4 address
-      } else if (!ipv6Block.test(blocks[i])) {
-        return false;
-      }
-    }
-    if (foundOmissionBlock) {
-      return blocks.length >= 1;
-    }
-    return blocks.length === expectedNumberOfBlocks;
-  }
-  return false;
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isISBN.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isISBN;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var isbn10Maybe = /^(?:[0-9]{9}X|[0-9]{10})$/;
-var isbn13Maybe = /^(?:[0-9]{13})$/;
-var factor = [1, 3];
-
-function isISBN(str) {
-  var version = arguments.length <= 1 || arguments[1] === undefined ? '' : arguments[1];
-
-  (0, _assertString2.default)(str);
-  version = String(version);
-  if (!version) {
-    return isISBN(str, 10) || isISBN(str, 13);
-  }
-  var sanitized = str.replace(/[\s-]+/g, '');
-  var checksum = 0;
-  var i = void 0;
-  if (version === '10') {
-    if (!isbn10Maybe.test(sanitized)) {
-      return false;
-    }
-    for (i = 0; i < 9; i++) {
-      checksum += (i + 1) * sanitized.charAt(i);
-    }
-    if (sanitized.charAt(9) === 'X') {
-      checksum += 10 * 10;
-    } else {
-      checksum += 10 * sanitized.charAt(9);
-    }
-    if (checksum % 11 === 0) {
-      return !!sanitized;
-    }
-  } else if (version === '13') {
-    if (!isbn13Maybe.test(sanitized)) {
-      return false;
-    }
-    for (i = 0; i < 12; i++) {
-      checksum += factor[i % 2] * sanitized.charAt(i);
-    }
-    if (sanitized.charAt(12) - (10 - checksum % 10) % 10 === 0) {
-      return !!sanitized;
-    }
-  }
-  return false;
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isISIN.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isISIN;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var isin = /^[A-Z]{2}[0-9A-Z]{9}[0-9]$/;
-
-function isISIN(str) {
-  (0, _assertString2.default)(str);
-  if (!isin.test(str)) {
-    return false;
-  }
-
-  var checksumStr = str.replace(/[A-Z]/g, function (character) {
-    return parseInt(character, 36);
-  });
-
-  var sum = 0;
-  var digit = void 0;
-  var tmpNum = void 0;
-  var shouldDouble = true;
-  for (var i = checksumStr.length - 2; i >= 0; i--) {
-    digit = checksumStr.substring(i, i + 1);
-    tmpNum = parseInt(digit, 10);
-    if (shouldDouble) {
-      tmpNum *= 2;
-      if (tmpNum >= 10) {
-        sum += tmpNum + 1;
-      } else {
-        sum += tmpNum;
-      }
-    } else {
-      sum += tmpNum;
-    }
-    shouldDouble = !shouldDouble;
-  }
-
-  return parseInt(str.substr(str.length - 1), 10) === (10000 - sum) % 10;
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isISO8601.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.iso8601 = undefined;
-
-exports.default = function (str) {
-  (0, _assertString2.default)(str);
-  return iso8601.test(str);
-};
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/* eslint-disable max-len */
-// from http://goo.gl/0ejHHW
-var iso8601 = exports.iso8601 = /^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/;
-/* eslint-enable max-len */
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isIn.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-exports.default = isIn;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-var _toString = require('./util/toString');
-
-var _toString2 = _interopRequireDefault(_toString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function isIn(str, options) {
-  (0, _assertString2.default)(str);
-  var i = void 0;
-  if (Object.prototype.toString.call(options) === '[object Array]') {
-    var array = [];
-    for (i in options) {
-      if ({}.hasOwnProperty.call(options, i)) {
-        array[i] = (0, _toString2.default)(options[i]);
-      }
-    }
-    return array.indexOf(str) >= 0;
-  } else if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) === 'object') {
-    return options.hasOwnProperty(str);
-  } else if (options && typeof options.indexOf === 'function') {
-    return options.indexOf(str) >= 0;
-  }
-  return false;
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js","./util/toString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\toString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isInt.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isInt;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var int = /^(?:[-+]?(?:0|[1-9][0-9]*))$/;
-var intLeadingZeroes = /^[-+]?[0-9]+$/;
-
-function isInt(str, options) {
-  (0, _assertString2.default)(str);
-  options = options || {};
-
-  // Get the regex to use for testing, based on whether
-  // leading zeroes are allowed or not.
-  var regex = options.hasOwnProperty('allow_leading_zeroes') && options.allow_leading_zeroes ? intLeadingZeroes : int;
-
-  // Check min/max
-  var minCheckPassed = !options.hasOwnProperty('min') || str >= options.min;
-  var maxCheckPassed = !options.hasOwnProperty('max') || str <= options.max;
-
-  return regex.test(str) && minCheckPassed && maxCheckPassed;
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isJSON.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-exports.default = isJSON;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function isJSON(str) {
-  (0, _assertString2.default)(str);
-  try {
-    var obj = JSON.parse(str);
-    return !!obj && (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object';
-  } catch (e) {/* ignore */}
-  return false;
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isLength.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-exports.default = isLength;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/* eslint-disable prefer-rest-params */
-function isLength(str, options) {
-  (0, _assertString2.default)(str);
-  var min = void 0;
-  var max = void 0;
-  if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) === 'object') {
-    min = options.min || 0;
-    max = options.max;
-  } else {
-    // backwards compatibility: isLength(str, min [, max])
-    min = arguments[1];
-    max = arguments[2];
-  }
-  var surrogatePairs = str.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g) || [];
-  var len = str.length - surrogatePairs.length;
-  return len >= min && (typeof max === 'undefined' || len <= max);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isLowercase.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isLowercase;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function isLowercase(str) {
-  (0, _assertString2.default)(str);
-  return str === str.toLowerCase();
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isMACAddress.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isMACAddress;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var macAddress = /^([0-9a-fA-F][0-9a-fA-F]:){5}([0-9a-fA-F][0-9a-fA-F])$/;
-
-function isMACAddress(str) {
-  (0, _assertString2.default)(str);
-  return macAddress.test(str);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isMD5.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isMD5;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var md5 = /^[a-f0-9]{32}$/;
-
-function isMD5(str) {
-  (0, _assertString2.default)(str);
-  return md5.test(str);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isMobilePhone.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isMobilePhone;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/* eslint-disable max-len */
-var phones = {
-  'ar-DZ': /^(\+?213|0)(5|6|7)\d{8}$/,
-  'ar-SY': /^(!?(\+?963)|0)?9\d{8}$/,
-  'ar-SA': /^(!?(\+?966)|0)?5\d{8}$/,
-  'en-US': /^(\+?1)?[2-9]\d{2}[2-9](?!11)\d{6}$/,
-  'cs-CZ': /^(\+?420)? ?[1-9][0-9]{2} ?[0-9]{3} ?[0-9]{3}$/,
-  'de-DE': /^(\+?49[ \.\-])?([\(]{1}[0-9]{1,6}[\)])?([0-9 \.\-\/]{3,20})((x|ext|extension)[ ]?[0-9]{1,4})?$/,
-  'da-DK': /^(\+?45)?(\d{8})$/,
-  'el-GR': /^(\+?30)?(69\d{8})$/,
-  'en-AU': /^(\+?61|0)4\d{8}$/,
-  'en-GB': /^(\+?44|0)7\d{9}$/,
-  'en-HK': /^(\+?852\-?)?[569]\d{3}\-?\d{4}$/,
-  'en-IN': /^(\+?91|0)?[789]\d{9}$/,
-  'en-NZ': /^(\+?64|0)2\d{7,9}$/,
-  'en-ZA': /^(\+?27|0)\d{9}$/,
-  'en-ZM': /^(\+?26)?09[567]\d{7}$/,
-  'es-ES': /^(\+?34)?(6\d{1}|7[1234])\d{7}$/,
-  'fi-FI': /^(\+?358|0)\s?(4(0|1|2|4|5)?|50)\s?(\d\s?){4,8}\d$/,
-  'fr-FR': /^(\+?33|0)[67]\d{8}$/,
-  'hu-HU': /^(\+?36)(20|30|70)\d{7}$/,
-  'it-IT': /^(\+?39)?\s?3\d{2} ?\d{6,7}$/,
-  'ja-JP': /^(\+?81|0)\d{1,4}[ \-]?\d{1,4}[ \-]?\d{4}$/,
-  'ms-MY': /^(\+?6?01){1}(([145]{1}(\-|\s)?\d{7,8})|([236789]{1}(\s|\-)?\d{7}))$/,
-  'nb-NO': /^(\+?47)?[49]\d{7}$/,
-  'nl-BE': /^(\+?32|0)4?\d{8}$/,
-  'nn-NO': /^(\+?47)?[49]\d{7}$/,
-  'pl-PL': /^(\+?48)? ?[5-8]\d ?\d{3} ?\d{2} ?\d{2}$/,
-  'pt-BR': /^(\+?55|0)\-?[1-9]{2}\-?[2-9]{1}\d{3,4}\-?\d{4}$/,
-  'pt-PT': /^(\+?351)?9[1236]\d{7}$/,
-  'ru-RU': /^(\+?7|8)?9\d{9}$/,
-  'sr-RS': /^(\+3816|06)[- \d]{5,9}$/,
-  'tr-TR': /^(\+?90|0)?5\d{9}$/,
-  'vi-VN': /^(\+?84|0)?((1(2([0-9])|6([2-9])|88|99))|(9((?!5)[0-9])))([0-9]{7})$/,
-  'zh-CN': /^(\+?0?86\-?)?1[345789]\d{9}$/,
-  'zh-TW': /^(\+?886\-?|0)?9\d{8}$/
-};
-/* eslint-enable max-len */
-
-// aliases
-phones['en-CA'] = phones['en-US'];
-phones['fr-BE'] = phones['nl-BE'];
-
-function isMobilePhone(str, locale) {
-  (0, _assertString2.default)(str);
-  if (locale in phones) {
-    return phones[locale].test(str);
-  }
-  return false;
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isMongoId.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isMongoId;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-var _isHexadecimal = require('./isHexadecimal');
-
-var _isHexadecimal2 = _interopRequireDefault(_isHexadecimal);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function isMongoId(str) {
-  (0, _assertString2.default)(str);
-  return (0, _isHexadecimal2.default)(str) && str.length === 24;
-}
-module.exports = exports['default'];
-},{"./isHexadecimal":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isHexadecimal.js","./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isMultibyte.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isMultibyte;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/* eslint-disable no-control-regex */
-var multibyte = /[^\x00-\x7F]/;
-/* eslint-enable no-control-regex */
-
-function isMultibyte(str) {
-  (0, _assertString2.default)(str);
-  return multibyte.test(str);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isNull.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isNull;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function isNull(str) {
-  (0, _assertString2.default)(str);
-  return str.length === 0;
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isNumeric.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isNumeric;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var numeric = /^[-+]?[0-9]+$/;
-
-function isNumeric(str) {
-  (0, _assertString2.default)(str);
-  return numeric.test(str);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isSurrogatePair.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isSurrogatePair;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var surrogatePair = /[\uD800-\uDBFF][\uDC00-\uDFFF]/;
-
-function isSurrogatePair(str) {
-  (0, _assertString2.default)(str);
-  return surrogatePair.test(str);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isURL.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isURL;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-var _isFQDN = require('./isFQDN');
-
-var _isFQDN2 = _interopRequireDefault(_isFQDN);
-
-var _isIP = require('./isIP');
-
-var _isIP2 = _interopRequireDefault(_isIP);
-
-var _merge = require('./util/merge');
-
-var _merge2 = _interopRequireDefault(_merge);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var default_url_options = {
-  protocols: ['http', 'https', 'ftp'],
-  require_tld: true,
-  require_protocol: false,
-  require_host: true,
-  require_valid_protocol: true,
-  allow_underscores: false,
-  allow_trailing_dot: false,
-  allow_protocol_relative_urls: false
-};
-
-var wrapped_ipv6 = /^\[([^\]]+)\](?::([0-9]+))?$/;
-
-function isRegExp(obj) {
-  return Object.prototype.toString.call(obj) === '[object RegExp]';
-}
-
-function checkHost(host, matches) {
-  for (var i = 0; i < matches.length; i++) {
-    var match = matches[i];
-    if (host === match || isRegExp(match) && match.test(host)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-function isURL(url, options) {
-  (0, _assertString2.default)(url);
-  if (!url || url.length >= 2083 || /\s/.test(url)) {
-    return false;
-  }
-  if (url.indexOf('mailto:') === 0) {
-    return false;
-  }
-  options = (0, _merge2.default)(options, default_url_options);
-  var protocol = void 0,
-      auth = void 0,
-      host = void 0,
-      hostname = void 0,
-      port = void 0,
-      port_str = void 0,
-      split = void 0,
-      ipv6 = void 0;
-
-  split = url.split('#');
-  url = split.shift();
-
-  split = url.split('?');
-  url = split.shift();
-
-  split = url.split('://');
-  if (split.length > 1) {
-    protocol = split.shift();
-    if (options.require_valid_protocol && options.protocols.indexOf(protocol) === -1) {
-      return false;
-    }
-  } else if (options.require_protocol) {
-    return false;
-  } else if (options.allow_protocol_relative_urls && url.substr(0, 2) === '//') {
-    split[0] = url.substr(2);
-  }
-  url = split.join('://');
-
-  split = url.split('/');
-  url = split.shift();
-
-  if (url === '' && !options.require_host) {
-    return true;
-  }
-
-  split = url.split('@');
-  if (split.length > 1) {
-    auth = split.shift();
-    if (auth.indexOf(':') >= 0 && auth.split(':').length > 2) {
-      return false;
-    }
-  }
-  hostname = split.join('@');
-
-  port_str = ipv6 = null;
-  var ipv6_match = hostname.match(wrapped_ipv6);
-  if (ipv6_match) {
-    host = '';
-    ipv6 = ipv6_match[1];
-    port_str = ipv6_match[2] || null;
-  } else {
-    split = hostname.split(':');
-    host = split.shift();
-    if (split.length) {
-      port_str = split.join(':');
-    }
-  }
-
-  if (port_str !== null) {
-    port = parseInt(port_str, 10);
-    if (!/^[0-9]+$/.test(port_str) || port <= 0 || port > 65535) {
-      return false;
-    }
-  }
-
-  if (!(0, _isIP2.default)(host) && !(0, _isFQDN2.default)(host, options) && (!ipv6 || !(0, _isIP2.default)(ipv6, 6)) && host !== 'localhost') {
-    return false;
-  }
-
-  host = host || ipv6;
-
-  if (options.host_whitelist && !checkHost(host, options.host_whitelist)) {
-    return false;
-  }
-  if (options.host_blacklist && checkHost(host, options.host_blacklist)) {
-    return false;
-  }
-
-  return true;
-}
-module.exports = exports['default'];
-},{"./isFQDN":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isFQDN.js","./isIP":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isIP.js","./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js","./util/merge":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\merge.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isUUID.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isUUID;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var uuid = {
-  3: /^[0-9A-F]{8}-[0-9A-F]{4}-3[0-9A-F]{3}-[0-9A-F]{4}-[0-9A-F]{12}$/i,
-  4: /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i,
-  5: /^[0-9A-F]{8}-[0-9A-F]{4}-5[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i,
-  all: /^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/i
-};
-
-function isUUID(str) {
-  var version = arguments.length <= 1 || arguments[1] === undefined ? 'all' : arguments[1];
-
-  (0, _assertString2.default)(str);
-  var pattern = uuid[version];
-  return pattern && pattern.test(str);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isUppercase.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isUppercase;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function isUppercase(str) {
-  (0, _assertString2.default)(str);
-  return str === str.toUpperCase();
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isVariableWidth.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isVariableWidth;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-var _isFullWidth = require('./isFullWidth');
-
-var _isHalfWidth = require('./isHalfWidth');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function isVariableWidth(str) {
-  (0, _assertString2.default)(str);
-  return _isFullWidth.fullWidth.test(str) && _isHalfWidth.halfWidth.test(str);
-}
-module.exports = exports['default'];
-},{"./isFullWidth":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isFullWidth.js","./isHalfWidth":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isHalfWidth.js","./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isWhitelisted.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isWhitelisted;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function isWhitelisted(str, chars) {
-  (0, _assertString2.default)(str);
-  for (var i = str.length - 1; i >= 0; i--) {
-    if (chars.indexOf(str[i]) === -1) {
-      return false;
-    }
-  }
-  return true;
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\ltrim.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = ltrim;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function ltrim(str, chars) {
-  (0, _assertString2.default)(str);
-  var pattern = chars ? new RegExp('^[' + chars + ']+', 'g') : /^\s+/g;
-  return str.replace(pattern, '');
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\matches.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = matches;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function matches(str, pattern, modifiers) {
-  (0, _assertString2.default)(str);
-  if (Object.prototype.toString.call(pattern) !== '[object RegExp]') {
-    pattern = new RegExp(pattern, modifiers);
-  }
-  return pattern.test(str);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\normalizeEmail.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = normalizeEmail;
-
-var _isEmail = require('./isEmail');
-
-var _isEmail2 = _interopRequireDefault(_isEmail);
-
-var _merge = require('./util/merge');
-
-var _merge2 = _interopRequireDefault(_merge);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var default_normalize_email_options = {
-  lowercase: true,
-  remove_dots: true,
-  remove_extension: true
-};
-
-function normalizeEmail(email, options) {
-  options = (0, _merge2.default)(options, default_normalize_email_options);
-  if (!(0, _isEmail2.default)(email)) {
-    return false;
-  }
-  var parts = email.split('@', 2);
-  parts[1] = parts[1].toLowerCase();
-  if (parts[1] === 'gmail.com' || parts[1] === 'googlemail.com') {
-    if (options.remove_extension) {
-      parts[0] = parts[0].split('+')[0];
-    }
-    if (options.remove_dots) {
-      parts[0] = parts[0].replace(/\./g, '');
-    }
-    if (!parts[0].length) {
-      return false;
-    }
-    parts[0] = parts[0].toLowerCase();
-    parts[1] = 'gmail.com';
-  } else if (options.lowercase) {
-    parts[0] = parts[0].toLowerCase();
-  }
-  return parts.join('@');
-}
-module.exports = exports['default'];
-},{"./isEmail":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\isEmail.js","./util/merge":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\merge.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\rtrim.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = rtrim;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function rtrim(str, chars) {
-  (0, _assertString2.default)(str);
-  var pattern = chars ? new RegExp('[' + chars + ']') : /\s/;
-
-  var idx = str.length - 1;
-  while (idx >= 0 && pattern.test(str[idx])) {
-    idx--;
-  }
-
-  return idx < str.length ? str.substr(0, idx + 1) : str;
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\stripLow.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = stripLow;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-var _blacklist = require('./blacklist');
-
-var _blacklist2 = _interopRequireDefault(_blacklist);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function stripLow(str, keep_new_lines) {
-  (0, _assertString2.default)(str);
-  var chars = keep_new_lines ? '\\x00-\\x09\\x0B\\x0C\\x0E-\\x1F\\x7F' : '\\x00-\\x1F\\x7F';
-  return (0, _blacklist2.default)(str, chars);
-}
-module.exports = exports['default'];
-},{"./blacklist":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\blacklist.js","./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\toBoolean.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = toBoolean;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function toBoolean(str, strict) {
-  (0, _assertString2.default)(str);
-  if (strict) {
-    return str === '1' || str === 'true';
-  }
-  return str !== '0' && str !== 'false' && str !== '';
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\toDate.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = toDate;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function toDate(date) {
-  (0, _assertString2.default)(date);
-  date = Date.parse(date);
-  return !isNaN(date) ? new Date(date) : null;
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\toFloat.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = toFloat;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function toFloat(str) {
-  (0, _assertString2.default)(str);
-  return parseFloat(str);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\toInt.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = toInt;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function toInt(str, radix) {
-  (0, _assertString2.default)(str);
-  return parseInt(str, radix || 10);
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\trim.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = trim;
-
-var _rtrim = require('./rtrim');
-
-var _rtrim2 = _interopRequireDefault(_rtrim);
-
-var _ltrim = require('./ltrim');
-
-var _ltrim2 = _interopRequireDefault(_ltrim);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function trim(str, chars) {
-  return (0, _rtrim2.default)((0, _ltrim2.default)(str, chars), chars);
-}
-module.exports = exports['default'];
-},{"./ltrim":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\ltrim.js","./rtrim":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\rtrim.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\unescape.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-      value: true
-});
-exports.default = unescape;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function unescape(str) {
-      (0, _assertString2.default)(str);
-      return str.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#x27;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#x2F;/g, '/').replace(/&#96;/g, '`');
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = assertString;
-function assertString(input) {
-  if (typeof input !== 'string') {
-    throw new TypeError('This library (validator.js) validates strings only');
-  }
-}
-module.exports = exports['default'];
-},{}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\merge.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = merge;
-function merge() {
-  var obj = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-  var defaults = arguments[1];
-
-  for (var key in defaults) {
-    if (typeof obj[key] === 'undefined') {
-      obj[key] = defaults[key];
-    }
-  }
-  return obj;
-}
-module.exports = exports['default'];
-},{}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\toString.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-exports.default = toString;
-function toString(input) {
-  if ((typeof input === 'undefined' ? 'undefined' : _typeof(input)) === 'object' && input !== null) {
-    if (typeof input.toString === 'function') {
-      input = input.toString();
-    } else {
-      input = '[object Object]';
-    }
-  } else if (input === null || typeof input === 'undefined' || isNaN(input) && !input.length) {
-    input = '';
-  }
-  return String(input);
-}
-module.exports = exports['default'];
-},{}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\whitelist.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = whitelist;
-
-var _assertString = require('./util/assertString');
-
-var _assertString2 = _interopRequireDefault(_assertString);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function whitelist(str, chars) {
-  (0, _assertString2.default)(str);
-  return str.replace(new RegExp('[^' + chars + ']+', 'g'), '');
-}
-module.exports = exports['default'];
-},{"./util/assertString":"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\validator\\lib\\util\\assertString.js"}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\warning\\browser.js":[function(require,module,exports){
+},{}],"C:\\Users\\akira\\Desktop\\video_portal_api-master\\node_modules\\warning\\browser.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.

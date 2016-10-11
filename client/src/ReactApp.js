@@ -10,7 +10,7 @@ import setAuthorizationToken from './utilities/setAuthorizationToken';
 import { setCurrentUser } from './actions/authActions';
 import "../../node_modules/granim/dist/granim.min.js";
 
-
+//using redux-thunk for asynchronous data
 const store = createStore(
   rootReducer,
   compose(
@@ -18,6 +18,7 @@ const store = createStore(
     window.devToolsExtension ? window.devToolsExtension() : f => f
   )
 );
+//we are checking whether the users is logged in or not
 let retrievedSessionData = localStorage.getItem('sessionData');
 if(retrievedSessionData){
 console.log(JSON.parse(retrievedSessionData));
@@ -27,7 +28,7 @@ setAuthorizationToken(sessionId);
 store.dispatch(setCurrentUser(JSON.parse(retrievedSessionData)));
 
 }
-
+//provider will connect react to redux
 class ReactApp extends React.Component {
   render() {
     return (

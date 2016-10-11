@@ -7,68 +7,59 @@ import NavigationBar from "../NavigationBar";
 import StarRating from "../rating/StarRating";
 import DefaultRate from "../rating/DefaultRate";
 
-class SingleVideoPage extends React.Component{
-  constructor(props){
-    super(props);
-    this.state = {
-      video:{
-        name:'',
-        description:'',
-        ratings:[2,4]
-      },
-      sessionId:"",
-      expanded:false
+class SingleVideoPage extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            video: {
+                name: '',
+                description: '',
+                ratings: [2, 4]
+            },
+            sessionId: "",
+            expanded: false
+        }
+        this.expandedText = this.expandedText.bind(this);
+        this.getMoretext = this.getMoretext.bind(this);
     }
-    this.expandedText = this.expandedText.bind(this);
-    this.getMoretext = this.getMoretext.bind(this);
-  }
-  componentDidMount () {
-  window.scrollTo(0, 0)
-}
-
-  componentWillMount(){
-    const { sessionId,videoId } = this.props.params;
-    this.setState({sessionId:sessionId});
-    this.props.fetchSingleVideo(sessionId,videoId);
-  }
-
-
-componentWillReceiveProps(nextProps){
-  console.log(nextProps);
-
-  if(this.props.video !== nextProps.video){
-    this.setState({video:nextProps.video})
-    this.setState({expanded:false});
-  }
-}
-
-componentDidUpdate(prevProps){
-  const { sessionId,videoId } = this.props.params;
-  if(prevProps.params !== this.props.params){
-    this.props.fetchSingleVideo(sessionId,videoId);
-
-  }
-}
-
-expandedText(){
-  this.setState({expanded:true});
-}
-
-getMoretext(){
-  if(this.state.expanded){
-    return this.state.video.description.substring(180)
-  } else{
-    return null
-  }
-}
-  render(){
-    const { video } = this.state
-    const { videos } = this.props
-    const videoUrl = `/${video.url}`;
-    const expandedTexts = this.getMoretext();
-
-    const videoList =  map(videos,(video,i) =>
-    <div className="media" key={i}>
+    componentDidMount() {
+        window.scrollTo(0, 0)
+    }
+    componentWillMount() {
+        const { sessionId, videoId } = this.props.params;
+        this.setState({ sessionId: sessionId });
+        this.props.fetchSingleVideo(sessionId, videoId);
+    }
+    componentWillReceiveProps(nextProps) {
+        console.log(nextProps);
+        if (this.props.video !== nextProps.video) {
+            this.setState({ video: nextProps.video })
+            this.setState({ expanded: false });
+        }
+    }
+    componentDidUpdate(prevProps) {
+        const { sessionId, videoId } = this.props.params;
+        if (prevProps.params !== this.props.params) {
+            this.props.fetchSingleVideo(sessionId, videoId);
+        }
+    }
+    expandedText() {
+        this.setState({ expanded: true });
+    }
+    getMoretext() {
+        if (this.state.expanded) {
+            return this.state.video.description.substring(180)
+        } else {
+            return null
+        }
+    }
+    render() {
+        const { video } = this.state
+        const { videos } = this.props
+        const videoUrl = `/${video.url}`;
+        const expandedTexts = this.getMoretext();
+        //fetch video listings
+        const videoList = map(videos, (video, i) => <div className="media" key={i}>
     <Link className="media-left" to={`/video/${this.state.sessionId}/${video._id}`}>
     <video className="media-object" src={`/${video.url}`} width="120" height="120"></video>
     </Link>
@@ -78,16 +69,8 @@ getMoretext(){
         <div className="card-text"><small className="text-muted"><DefaultRate rating={video.ratings}/></small></div>
     </div>
 
-    </div>
-  );
-
-    return(
-      // <div>
-      // <h1>this is activeVideo page {video.name}</h1>
-      // <video ref={video._id} src={videoUrl} width="520" height="440" controls autoPlay>
-      // </video>
-      // </div>
-      <div>
+    </div>);
+        return (<div>
       <div style={{paddingBottom:'34px'}}>
 
       </div>
@@ -128,10 +111,8 @@ getMoretext(){
               </div>
               </div>
 
-      </div>
-
-    )
-  }
+      </div>)
+    }
 }
 
 function mapStateToProps(state){

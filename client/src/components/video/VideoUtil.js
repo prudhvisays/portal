@@ -8,7 +8,7 @@ constructor(props){
 
 }
   playOrPause(){
-    const videoElement = this.refs[this.props.refId]
+    const videoElement = this.refs[this.props.refId]    //by using these user won't be able to pay more than one video on video listings
     if(videoElement.paused){
       videoElement.play();
     }else {
@@ -35,7 +35,6 @@ constructor(props){
   render() {
     const { refId, srcUrl, onPlayu, onPause, className} = this.props;
     return (
-      // <video ref="video" src={this.props.src} controls/>
       <video className={className} ref={refId}  width="100%" height="auto"  controls onPlay={onPlayu} onPause={onPause}>
         <source src={srcUrl}></source>
       </video>

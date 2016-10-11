@@ -44,6 +44,7 @@ export function fetchSingleVideo(sessionId,videoId){
     });
   }
 }
+// fetch video listings
 export function videoList(sessionId) {
   console.log("the",sessionId);
   return dispatch => {

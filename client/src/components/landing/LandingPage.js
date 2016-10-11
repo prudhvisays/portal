@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from "react-router";
 import { connect } from "react-redux";
-import LoginModal from "../modals/LoginModal";
 import LoginForm from "../Login/LoginForm";
 
 class Greetings extends React.Component {
@@ -57,7 +56,7 @@ logoColor(){
     const videoListUrl = `/videoslist/${sessionId}`;
     return (
       <div className="landingBody">
-      <div className="container contain" style={{'width':'75%'}}>
+      <div className="container contain">
         <div className="row">
           <div className="col-xs-12">
                 <div className="bloc-logo">
