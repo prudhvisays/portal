@@ -13,6 +13,14 @@ module.exports = function(config) {
            debug: true,
            transform: [ 'babelify' ]
     },
-    reporters: ['progress']
+    reporters: ['progress', 'html'],
+    htmlReporter: {
+                    outputFile: 'tests/units.html',
+                    pageTitle: 'Test results',
+                    subPageTitle: 'Crossover Video Portal',
+                    groupSuites: true,
+                    useCompactStyle: true,
+                    useLegacyStyle: true
+                  }
   });
 };
