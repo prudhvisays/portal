@@ -75,7 +75,7 @@ logoColor(){
     const userLinks = (
 
       <ul className="nav navbar-nav">
-        <li className="nav-item active">
+        <li className="nav-item active font-family">
           <h4>{user.username}</h4>
         </li>
         <li className="nav-item">
