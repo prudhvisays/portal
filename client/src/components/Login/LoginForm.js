@@ -68,7 +68,7 @@ class LoginForm extends React.Component {
         type="password"
         />
         {errors.error && <span><i class ="errorMsg">{errors.error}</i></span>}
-        <button>LOGIN</button>
+        <button className="buttons">LOGIN</button>
 
       </form>
     )

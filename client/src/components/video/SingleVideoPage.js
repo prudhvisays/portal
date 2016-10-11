@@ -88,8 +88,11 @@ getMoretext(){
       // </video>
       // </div>
       <div>
+      <div style={{paddingBottom:'34px'}}>
+
+      </div>
       <NavigationBar/>
-              <div className="container" style={{'marginTop':'10px'}}>
+              <div className="container" style={{'marginTop':'30px'}}>
                   <div className="row">
                     <div className="col-md-8">
                     <div className="card">

@@ -22,7 +22,6 @@ class VideoGrid extends React.Component {
     return (
       <div className="video-cards">
         {map(videos,(video) => <Video {...this.props} key={video._id} video={video}/>)}
-
         </div>
     )
   }

@@ -9,6 +9,25 @@ class Greetings extends React.Component {
     super(props);
     this.logoColor = this.logoColor.bind(this);
   }
+  componentWillMount() {
+
+    if(this.props.authReducers.isAuthenticated) {
+      const sessionData = JSON.parse(localStorage.getItem('sessionData'));
+      const { sessionId } = sessionData;
+      const videoUrl = `videoslist/${sessionId}`;
+      this.context.router.push(videoUrl);
+    }
+  }
+
+  componentWillUpdate(nextProps){
+    if(nextProps.authReducers.isAuthenticated) {
+      const sessionData = JSON.parse(localStorage.getItem('sessionData'));
+      const { sessionId } = sessionData;
+      const videoUrl = `videoslist/${sessionId}`;
+      this.context.router.push(videoUrl);
+    }
+  }
+
   componentDidMount(){
     this.logoColor();
   }
@@ -38,21 +57,31 @@ logoColor(){
     const videoListUrl = `/videoslist/${sessionId}`;
     return (
       <div className="landingBody">
-    <main>
-    <div className="bloc-logo">
-    <canvas id="logo-canvas"></canvas>
-    <a className="logo-mask">Granim.js</a>
-    </div>
-    <div className="panel pink">
-   <LoginForm/>
-  <Link to="/login">LoginPage</Link>
-  <Link to={videoListUrl}>view</Link>
-</div>
-    </main>
+      <div className="container contain" style={{'width':'75%'}}>
+        <div className="row">
+          <div className="col-xs-12">
+                <div className="bloc-logo">
+                <canvas id="logo-canvas">hello</canvas>
+                <a className="logo-mask">Granim.js</a>
+                </div>
+          </div>
+          <div className="col-xs-12">
+                <div className="panel pink">
+               <LoginForm/>
+            </div>
+          </div>
+        </div>
       </div>
+      </div>
+
     );
   }
 }
+
+Greetings.contextTypes = {
+  router : React.PropTypes.object.isRequired
+}
+
 
 function mapStateToProps(state) {
   return {
