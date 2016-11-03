@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "gulp test",
-    "start": "index.js"
+    "start": "babel-node index.js"
   },
   "author": "",
   "license": "ISC",
