@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var db = mongoose.connection;
 var app = express();
+var path = require('path');
 
 db.on('error', console.error);
 
@@ -36,10 +37,13 @@ app.use('/videos',express.static('videos'));
 // serve client side code.
 app.use('/',express.static('client'));
 
-app.get('*', function(req, res) {
-    res.redirect('/');
-});
+// app.get('*', function(req, res) {
+//     res.redirect('/');
+// });
 
+app.get('*', function(req, res) {
+  res.sendFile(path.join( __dirname, 'client/index.html'));
+});
 
 //Finally starting the listener
 // app.listen(configs.applicationPort, function () {
