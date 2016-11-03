@@ -41,6 +41,10 @@ app.get('*', function(req, res) {
 
 
 //Finally starting the listener
-app.listen(configs.applicationPort, function () {
-  console.log('Example app listening on port '+configs.applicationPort+'!');
+// app.listen(configs.applicationPort, function () {
+//   console.log('Example app listening on port '+configs.applicationPort+'!');
+// });
+
+app.listen(process.env.PORT || configs.applicationPort, function(){
+  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
